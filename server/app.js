@@ -6,7 +6,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+  }),
+);
 app.use(morgan('dev')); // Use morgan for logging HTTP requests
 app.use(express.json()); // Use express.json() middleware
 

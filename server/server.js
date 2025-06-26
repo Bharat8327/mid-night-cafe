@@ -11,7 +11,6 @@ import createProdct from './routes/productRoutes.js';
 app.use(cookieParser()); // Use cookie-parser middleware
 
 app.get('/', (req, res) => {
-  //   console.log('req.cookies', req.cookies);
   return res.send('welcome to the home page');
 });
 
@@ -37,6 +36,8 @@ const options = {
 
 const specs = swaggerJSDoc(options);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs)); // Fixed: added leading slash to path
+
+
 app.use('/u', authRoutes);
 app.use('/u', product);
 app.use('/u', createProdct);

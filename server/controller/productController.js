@@ -18,7 +18,7 @@ export const createProduct = async (req, res) => {
       descriptions,
       category,
       price,
-      sizes, // ✅ sizes should be an array of { size, price } objects
+      sizes,
       image,
     });
 

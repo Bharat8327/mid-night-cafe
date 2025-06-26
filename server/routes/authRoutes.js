@@ -1,10 +1,11 @@
 import express from 'express';
-import { signup, login, authWithGoogle } from '../controller/authController.js';
+import { signup, login, authWithGoogle ,authWithgit } from '../controller/authController.js';
 const routes = express.Router();
 
 routes.post('/login', login);
 routes.post('/signup', signup);
 routes.post('/verify', authWithGoogle);
+routes.post('/gitverify',authWithgit);
 
 export default routes;
 // this is for create new user
