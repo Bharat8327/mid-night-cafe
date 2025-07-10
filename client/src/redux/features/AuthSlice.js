@@ -6,16 +6,24 @@ import {
 } from '../../config/firebase.js';
 import { signInWithPopup } from 'firebase/auth';
 import axios from 'axios';
+import { setCookie } from '../../utils/utils.js';
 
 const initialState = {
   isLoading: false,
+  authenticated: false,
+  name: null,
+  id: null,
+  role: null,
 };
 
 export const signUp = createAsyncThunk('auth/signup', async (data) => {
   try {
-    const response = await axios.post('http://localhost:3000/u/signup', {
-      ...data,
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/u/signup`,
+      {
+        ...data,
+      },
+    );
     return response;
   } catch (error) {
     console.log(error.message);
@@ -24,10 +32,25 @@ export const signUp = createAsyncThunk('auth/signup', async (data) => {
 
 export const login = createAsyncThunk('auth/login', async (data) => {
   try {
-    const response = axios.post(import.meta.env.VITE_API_URL, {
-      ...data,
-    });
-    return response.data;
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/u/login`,
+      {
+        ...data,
+      },
+      { withCredentials: true },
+    );
+
+    // const verifyres = await fetch(
+    //   `${import.meta.env.VITE_API_URL}/u/auth/verify`,
+    //   {
+    //     method: 'POST',
+    //     credentials: 'include',
+    //   },
+    // );
+    // const res = await verifyres.json();
+    console.log(response.data.data);
+
+    return response.data.data;
   } catch (error) {
     console.log(error.message);
   }
@@ -40,7 +63,7 @@ export const signInWithGoogle = createAsyncThunk('auth/google', async () => {
     const response = await axios.post('http://localhost:3000/u/verify', {
       idToken,
     });
-    return response;
+    return response.data.data;
   } catch (error) {
     console.log(error.message);
   }
@@ -53,9 +76,11 @@ export const signInWithGithub = createAsyncThunk('auth/github', async () => {
     const response = await axios.post('http://localhost:3000/u/gitverify', {
       idToken,
     });
-    return response;
+    console.log(response.data.data);
+
+    return response.data.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
+    console.log(error.message);
   }
 });
 
@@ -70,8 +95,15 @@ const AuthSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        console.log(action.payload);
+        state.authenticated = action.payload.authenticated;
+        state.name = action.payload.name;
+        state.id = action.payload.id;
+        state.role = action.payload.role;
+
+        setCookie('name', action.payload.name);
+        setCookie('id', action.payload.id);
+        setCookie('role', action.payload.role);
+        setCookie('authenticated', action.payload.authenticated);
       });
 
     // for google auth
@@ -81,7 +113,33 @@ const AuthSlice = createSlice({
       })
       .addCase(signInWithGoogle.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.authenticated = action.payload.authenticated;
+        state.name = action.payload.name;
+        state.id = action.payload.id;
+        state.role = action.payload.role;
+        setCookie('name', action.payload.name);
+        setCookie('id', action.payload.id);
+        setCookie('authenticated', action.payload.authenticated);
+        setCookie('role', action.payload.role);
+      });
+
+    // sign in with github
+    builder
+      .addCase(signInWithGithub.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(signInWithGithub.fulfilled, (state, action) => {
         console.log(action.payload);
+
+        state.isLoading = false;
+        state.authenticated = action.payload.authenticated;
+        state.name = action.payload.name;
+        state.id = action.payload.id;
+        state.role = action.payload.role;
+        setCookie('name', action.payload.name);
+        setCookie('id', action.payload.id);
+        setCookie('authenticated', action.payload.authenticated);
+        setCookie('role', action.payload.role);
       });
 
     // for signup (create account)

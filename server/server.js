@@ -37,10 +37,13 @@ const options = {
 const specs = swaggerJSDoc(options);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs)); // Fixed: added leading slash to path
 
-
 app.use('/u', authRoutes);
 app.use('/u', product);
 app.use('/u', createProdct);
+
+app.use((req, res, next) => {
+  res.status(404).send('Sorry, the requested resource was not found.');
+});
 
 app.listen(config.app.PORT, () => {
   console.log(`Server is running on port ${config.app.PORT}`);

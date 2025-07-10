@@ -1,41 +1,47 @@
 import Product from '../models/product.js';
-import { error, success } from '../utils/responseWrapper.js';
+import { successResponse, errorResponse } from '../utils/responseWrapper.js';
+import Status from '../utils/statusCode.js';
+import message from '../utils/message.js';
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, descriptions, category, price, sizes, image } = req.body;
-    if (!name || !descriptions || !category || !price || !sizes || !image) {
-      return res.json(error(400, 'All fields are required'));
+    const { name, description, category, price, size, image, rating } =
+      req.body;
+    if (!name || !description || !category || !price || !size || !image) {
+      return errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
 
     // const cloud = await cloudinary.uploader.upload(image, {
     //   folder: 'productImg',
     // });
 
-    const newProduct = await Product.create({
+    const product = await Product.create({
       createdBy: req.user._id,
       name,
-      descriptions,
+      description,
       category,
       price,
-      sizes,
+      sizes: {
+        size,
+        price,
+      },
       image,
+      rating,
     });
-
-    return res.status(201).json({ success: true, product: newProduct });
+    successResponse(res, Status.CREATED, message[200], product);
   } catch (err) {
-    return res.json(error(500, 'Server error'));
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
 export const getAllProduct = async (req, res) => {
   try {
-    const products = Product.find({ isAvailable: true })
-      .populate('createdBy', 'name phone')
-      .populate('rating');
-    return res.json(success(200, products));
+    const products = await Product.find().populate('createdBy', 'name phone');
+    console.log(products);
+
+    successResponse(res, Status.OK, message[200], products);
   } catch (err) {
-    return res.json(error(500, 'Server error'));
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
@@ -46,60 +52,111 @@ export const getProductById = async (req, res) => {
       .populate('rating');
 
     if (!product) {
-      return res.json(error(404, 'Product not found'));
+      errorResponse(res, Status.NOT_FOUND, 'Product Not Found');
     }
-    return res.json(success(200, product));
+    successResponse(res, Status.OK, message[200], product);
   } catch (err) {
-    return res.json(error(500, 'server error'));
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
-
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
+    const isAvailable = req.body;
+    console.log(isAvailable);
 
+    const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json(error(404, 'Product not found'));
+      return errorResponse(res, Status.NOT_FOUND, 'Product not found');
     }
 
-    // Authorization check
+    // Authorization check: allow Admin or the creator to update
     if (
       product.createdBy.toString() !== req.user._id.toString() &&
       req.user.role !== 'admin'
     ) {
-      return res
-        .status(403)
-        .json(error(403, 'Not authorized to update this product'));
+      return errorResponse(
+        res,
+        Status.FORBIDDEN,
+        'Not authorized to update this product',
+      );
     }
+
+    // Perform update
     const updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
       new: true,
-      runValidators: true, //If the update data does not meet the model’s validation rules, it throws an error.
+      runValidators: true,
     });
+
     if (!updatedProduct) {
-      return res.status(404).json(error(404, 'Failed to update product'));
+      return errorResponse(res, Status.NOT_FOUND, 'Failed to update product');
     }
-    return res.json(success(200, updateProduct));
+
+    return successResponse(
+      res,
+      Status.OK,
+      'Product updated successfully',
+      updatedProduct,
+    );
   } catch (err) {
-    return res.json(error(500, 'server error'));
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
-export const deletProduct = async (req, res) => {
+// DELETE /api/products/:id
+export const deleteProduct = async (req, res) => {
   try {
-    const product = Product.findById(req.params.id);
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
     if (!product) {
-      return res.json(error(404, 'Product not found'));
+      return errorResponse(res, 404, 'Product not found');
     }
-    if (
-      product.createdBy.toString() !== req.user._id.toString() &&
-      req.user.role !== 'admin'
-    ) {
-      return res.json(error(403, 'Not authorized to delete this product'));
+
+    if (req.user.role !== 'Admin' && !product.createdBy.equals(req.user._id)) {
+      return errorResponse(res, 403, 'Not authorized to delete this product');
     }
-    await product.remove();
-    return res.json(success(200, 'Product deleted successfully'));
-  } catch (err) {
-    return res.json(error(500, 'server error'));
+
+    await product.deleteOne();
+
+    return successResponse(
+      res,
+      200,
+      'Product deleted successfully',
+      'Prodcut delted successfully',
+    );
+  } catch (error) {
+    return errorResponse(res, 500, error.message);
+  }
+};
+
+export const updateAvailability = async (req, res) => {
+  try {
+    const { isAvailable } = req.body;
+    const { id } = req.params;
+
+    if (!id || typeof isAvailable !== 'boolean') {
+      return res.status(400).json({ message: 'Invalid input data' });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { isAvailable },
+      { new: true },
+    );
+
+    if (!updatedProduct) {
+      return errorResponse(res, Status.NOT_FOUND, 'Product not found');
+    }
+
+    return successResponse(
+      res,
+      Status.OK,
+      'Product availability updated successfully',
+      updatedProduct,
+    );
+  } catch (error) {
+    console.error('Error updating availability:', error);
+    return errorResponse(res, 500, error.message);
   }
 };

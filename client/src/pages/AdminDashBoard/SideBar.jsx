@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { ShoppingCart, Menu, Users, BarChart3, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { ShoppingCart, Menu, Users, BarChart3, X, LogOut } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { removeCookie } from '../../utils/utils.js';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(() => {
     const path = location.pathname;
     if (path.includes('/admin/orders')) return 'orders';
@@ -12,6 +14,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     if (path.includes('/admin/analytics')) return 'analytics';
     return 'orders';
   });
+  const handleLogout = () => {
+    // Clear any stored user data
+    removeCookie('authenticated');
+    removeCookie('id');
+    removeCookie('name');
+    removeCookie('role');
+
+    // Redirect to login page
+    navigate('/login');
+  };
 
   const menuItems = [
     { id: 'orders', label: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
@@ -111,9 +123,26 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </nav>
 
           {/* Footer */}
-          <div className="p-3 lg:p-4 border-t border-slate-700 flex-shrink-0">
-            <button className="w-full bg-slate-700 text-slate-300 py-2 lg:py-3 rounded-lg hover:bg-slate-600 transition-colors text-sm lg:text-base px-3 lg:px-4">
+          <div className="p-3 lg:p-4 border-t border-slate-700 flex-shrink-0 ">
+            <button className="w-full cursor-pointer bg-slate-700 text-slate-300 py-2 lg:py-3 rounded-lg hover:bg-slate-600 transition-colors text-sm lg:text-base px-3 lg:px-4">
               View Customer Menu
+            </button>
+            <button
+              onClick={handleLogout}
+              className={`w-full flex items-center cursor-pointer ${
+                isOpen ? 'space-x-3 px-4' : 'justify-center px-2'
+              } py-3 rounded-lg transition-all duration-200 hover:bg-red-600 bg-red-500 text-white group relative mt-1.5`}
+              title={!isOpen ? 'Logout' : ''}
+            >
+              <LogOut size={20} className="text-white" />
+              {isOpen && <span className="font-medium">Logout</span>}
+
+              {/* Tooltip for collapsed state */}
+              {!isOpen && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-slate-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  Logout
+                </div>
+              )}
             </button>
           </div>
         </div>

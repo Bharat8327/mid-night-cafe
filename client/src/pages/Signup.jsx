@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signUp } from '../redux/features/AuthSlice.js';
 import {
   Crown,
   Mail,
@@ -10,22 +11,22 @@ import {
   Phone,
   ShieldUser,
 } from 'lucide-react';
+import { useDispatch } from 'react-redux';
 
 const SignupAdmin = () => {
-  const [formData, setFormData] = useState({
-    userName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    mobile: '',
-    role: 'customer',
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    role: 'customer',
+  });
 
   const handleChange = (e) => {
     console.log(e.target.name, e.target.value); // ← Logs name & new value
@@ -40,15 +41,11 @@ const SignupAdmin = () => {
       return;
     }
     setError('');
-    setLoading(true);
+    // setLoading(true);
     console.log(formData);
+    dispatch(signUp(formData));
 
     // TODO: Replace with real API call
-    setTimeout(() => {
-      setLoading(false);
-      console.log('Admin Registered:', formData);
-      // navigate('/login');
-    }, 2000);
   };
 
   return (
@@ -81,7 +78,7 @@ const SignupAdmin = () => {
             {/* Admin Name */}
             <div>
               <label
-                htmlFor="userName"
+                htmlFor="name"
                 className="text-[#C29970] text-sm mb-1 block"
               >
                 Name
@@ -90,11 +87,11 @@ const SignupAdmin = () => {
                 <Crown className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
                 <input
                   type="text"
-                  name="userName"
-                  id="userName"
+                  name="name"
+                  id="name"
                   required
                   onChange={handleChange}
-                  value={formData.userName}
+                  value={formData.name}
                   placeholder="Enter your name"
                   className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
                 />
@@ -135,12 +132,12 @@ const SignupAdmin = () => {
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
                 <input
                   type="tel"
-                  name="mobile"
+                  name="phone"
                   id="tel"
                   required
                   maxLength={10}
                   onChange={handleChange}
-                  value={formData.mobile}
+                  value={formData.phone}
                   placeholder="Enter your Phone Number"
                   className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
                 />
@@ -233,6 +230,7 @@ const SignupAdmin = () => {
             {/* Submit Button */}
             <button
               type="submit"
+              onClick={handleSubmit}
               disabled={loading}
               className="w-full py-3 text-white font-semibold bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 rounded-lg shadow-md hover:opacity-90 transition disabled:opacity-50"
             >

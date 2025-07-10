@@ -48,12 +48,16 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    rating: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Rating',
-      },
-    ],
+    // rating: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Rating',
+    //   },
+    // ],
+    rating: {
+      type: Number,
+      default: 1,
+    },
   },
   { timestamps: true },
 );

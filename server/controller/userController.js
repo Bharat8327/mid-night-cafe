@@ -1,14 +1,15 @@
 import User from '../models/user.js';
 import Order from '../models/order.js';
-import { success, error } from '../utils/responseWrapper.js';
-import order from '../models/order.js';
+import { successResponse, errorResponse } from '../utils/responseWrapper.js';
+import Status from '../utils/statusCode.js';
+import message from '../utils/message.js';
 
 export const getProfile = async (req, res) => {
   try {
     const user = req.user;
-    return res.json(success(200, user));
+    successResponse(res, Status.OK, message[200], user);
   } catch (err) {
-    return res.json(error(500, err.message));
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
@@ -28,9 +29,9 @@ export const updateUserProfile = async (req, res) => {
     );
     console.log(updatUser);
 
-    return res.json(success(200, updatUser));
+    successResponse(res, Status.OK, message[200], updatUser);
   } catch (err) {
-    return res.json(error(500, err.message));
+    successResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
@@ -40,9 +41,9 @@ export const getMyOrders = async (req, res) => {
       'products.product',
       'name price',
     );
-    return res.json(success(200, orders));
+    successResponse(res, Status.OK, message[200], orders);
   } catch (err) {
-    return res.json(error(500, err.message));
+    errorResponse(res, Status.OK, err.message);
   }
 };
 
@@ -57,8 +58,8 @@ export const getMyOrderById = async (req, res) => {
       return res.json(error(404, 'product not found'));
     }
 
-    return res.json(success(200, order));
+    successResponse(res, Status.OK, message[200], order);
   } catch (err) {
-    return res.json(error(500, err.message));
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };

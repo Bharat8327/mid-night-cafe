@@ -1,17 +1,19 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import { getCookie } from '../utils/utils.js';
 
 function OpenRoutes() {
-  const token = 'hshhs';
-  const role = 'ram';
+  const authenticated = getCookie('authenticated'); // assuming token is stored with name 'token'
+  const id = getCookie('id'); // optional, if you store user role
+  const role = getCookie('role'); // optional, if you store user role
 
-  if (token) {
-    return <Navigate to="/" />;
+  if (authenticated && id) {
+    return role === 'Admin' ? (
+      <Navigate to="/admin/menu" />
+    ) : (
+      <Navigate to="/dashboard" />
+    );
   }
 
-  if (role) {
-    return <Navigate to="/" />;
-  }
   return (
     <div>
       <Outlet />

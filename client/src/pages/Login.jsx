@@ -1,4 +1,4 @@
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Coffee } from 'lucide-react';
 import {
@@ -12,6 +12,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -20,7 +21,11 @@ function Login() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    dispatch(login(formData));
+    dispatch(login(formData))
+      .unwrap()
+      .then(() => {
+        navigate('/admin/orders');
+      });
     setLoading(!loading);
     setTimeout(() => {
       setLoading(!!loading);
@@ -29,11 +34,19 @@ function Login() {
   };
 
   const googleAuth = () => {
-    dispatch(signInWithGoogle());
+    dispatch(signInWithGoogle())
+      .unwrap()
+      .then(() => {
+        navigate('/dashboard');
+      });
   };
 
   const githubAuth = () => {
-    dispatch(signInWithGithub());
+    dispatch(signInWithGithub())
+      .unwrap()
+      .then(() => {
+        navigate('/dashboard');
+      });
   };
 
   const handleInputChange = (e) => {
@@ -133,7 +146,7 @@ function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-300"
+                  className="absolute cursor-pointer right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-300"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -152,11 +165,11 @@ function Login() {
                   type="checkbox"
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-purple-400 focus:ring-purple-400 border-purple-500/30 rounded bg-black/80"
+                  className="h-4 cursor-pointer w-4 text-purple-400 focus:ring-purple-400 border-purple-500/30 rounded bg-black/80"
                 />
                 <label
                   htmlFor="rememberMe"
-                  className="ml-2 block text-sm text-[#C29970]"
+                  className="ml-2 block text-sm text-[#C29970] cursor-pointer"
                 >
                   Remember me
                 </label>
@@ -172,7 +185,7 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+              className="w-full cursor-pointer bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -193,7 +206,7 @@ function Login() {
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 onClick={googleAuth}
-                className="w-full inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
+                className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
               >
                 <span className="w-5 h-5 rounded-2xl bg-[#D1B394] ">
                   <img
@@ -207,7 +220,7 @@ function Login() {
 
               <button
                 onClick={githubAuth}
-                className="w-full inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
+                className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
               >
                 <span className="w-5 h-5 rounded-2xl bg-[#D1B394]">
                   <img

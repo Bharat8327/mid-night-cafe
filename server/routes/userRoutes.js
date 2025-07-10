@@ -13,6 +13,9 @@ routes.put('/profile', protect, updateUserProfile);
 routes.get('/orders', protect, getMyOrders);
 routes.get('/order/:id', protect, getMyOrderById);
 
+//Product cart
+// routes.post('/addtocart', addToCartController);
+
 export default routes;
 
 /**

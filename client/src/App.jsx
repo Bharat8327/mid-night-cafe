@@ -10,13 +10,12 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import OTPVerification from './pages/OtpVerification.jsx';
 import ResetPassword from './pages/resetPassword.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import UserDashBoard from '../src/components/UserDashBoard.jsx';
 
 import OrdersOverview from './pages/AdminDashBoard/OrderOverview.jsx';
 import MenuManagement from './pages/AdminDashBoard/MenuManagement.jsx';
 import CustomerManagement from './pages/AdminDashBoard/CustomerManagement.jsx';
 import Analytics from './pages/AdminDashBoard/Analytic.jsx';
-import SideBar from './pages/AdminDashBoard/SideBar.jsx';
-import Header from './pages/AdminDashBoard/Header.jsx';
 
 function App() {
   return (
@@ -24,8 +23,8 @@ function App() {
       {/* Wrap Header and Sidebar here */}
       <Routes>
         {/* Public routes */}
+        <Route path="/" element={<HomePage />} />
         <Route element={<OpenRoutes />}>
-          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -34,16 +33,17 @@ function App() {
         </Route>
 
         {/* Customer routes */}
-        <Route element={<ProtectRoutes role={['customer']} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<ProtectRoutes roles={['customer']} />}>
+          <Route path="/dashboard" element={<UserDashBoard />} />
         </Route>
 
-        <Route element={<ProtectRoutes role={['admin']} />}>
+        <Route element={<ProtectRoutes roles={['Admin']} />}>
           <Route path="/admin/orders" element={<OrdersOverview />} />
           <Route path="/admin/menu" element={<MenuManagement />} />
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/analytics" element={<Analytics />} />
         </Route>
+        <Route path="*" element={<p>Page Not Found 404</p>} />
       </Routes>
     </>
   );

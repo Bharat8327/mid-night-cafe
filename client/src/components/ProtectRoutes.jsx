@@ -2,29 +2,30 @@ import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from '../pages/AdminDashBoard/Header.jsx';
 import Sidebar from '../pages/AdminDashBoard/SideBar.jsx';
+import { getCookie, removeCookie } from '../utils/utils.js';
 
-function ProtectRoutes({ role }) {
+function ProtectRoutes({ roles }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const token = 'dsfmasdjvnasvj';
-  const roleFromBackend = 'admin';
+  const isAuthnticated = getCookie('authenticated');
+  const role = getCookie('role');
 
-  if (!token) {
+  if (!isAuthnticated || role === 'undefined') {
     return <Navigate to="/login" />;
   }
 
-  if (!role.includes('admin')) {
+  if (!roles.includes(role)) {
     return <Navigate to="/login" />;
   }
 
   return (
     <div>
-      {roleFromBackend === 'admin' ? (
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      ) : (
-        'hello'
-      )}
-      {sidebarOpen && (
-        <Sidebar isopen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      {role === 'Admin' && (
+        <>
+          <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          {sidebarOpen && (
+            <Sidebar isopen={sidebarOpen} setIsOpen={setSidebarOpen} />
+          )}
+        </>
       )}
       <Outlet />
     </div>

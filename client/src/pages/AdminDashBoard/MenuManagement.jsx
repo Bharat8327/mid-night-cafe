@@ -1,50 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Edit, Trash2, X, Upload, Plus, Star } from 'lucide-react';
-
+import {
+  fetchAllProducts,
+  addNewItems,
+  updateProduct,
+  deleteProduct,
+  toggleAvailability,
+} from '../../redux/features/ProductSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
 const MenuManagement = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: 'Cappuccino',
-      description: 'Rich espresso with steamed milk foam',
-      price: 4.5,
-      category: 'coffee',
-      available: true,
-      image: '/placeholder.svg',
-      rating: 4.8,
-    },
-    {
-      id: 2,
-      name: 'Latte',
-      description: 'Smooth espresso with steamed milk',
-      price: 5.0,
-      category: 'coffee',
-      available: true,
-      image: '/placeholder.svg',
-      rating: 4.6,
-    },
-    {
-      id: 3,
-      name: 'Croissant',
-      description: 'Buttery, flaky French pastry',
-      price: 3.5,
-      category: 'pastry',
-      available: true,
-      image: '/placeholder.svg',
-      rating: 4.3,
-    },
-    {
-      id: 4,
-      name: 'Green Tea',
-      description: 'Organic green tea leaves',
-      price: 3.0,
-      category: 'tea',
-      available: false,
-      image: '/placeholder.svg',
-      rating: 4.1,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const { product } = useSelector((state) => state.product);
 
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
+  useEffect(() => {
+    setItems(product);
+  }, [product]);
+
+  const [items, setItems] = useState(product);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -56,7 +31,6 @@ const MenuManagement = () => {
     image: '/placeholder.svg',
     rating: 0,
   });
-
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -86,31 +60,32 @@ const MenuManagement = () => {
     }
   };
 
-  const toggleAvailability = (id) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, available: !item.available } : item,
-      ),
+  const productAvailability = (prod) => {
+    console.log(prod);
+    dispatch(
+      toggleAvailability({ id: prod._id, isAvailable: !prod.isAvailable }),
     );
   };
 
   const deleteItem = (id) => {
-    setItems(items.filter((item) => item.id !== id));
+    dispatch(deleteProduct(id));
   };
 
   const addItem = () => {
     if (newItem.name && newItem.description && newItem.price) {
       const item = {
-        id: Date.now(),
         name: newItem.name,
         description: newItem.description,
         price: parseFloat(newItem.price),
         category: newItem.category,
-        available: true,
-        image: newItem.image,
+        isAvailable: true,
+        // image: newItem.image,
+        image: 'dnsjan',
         rating: 0,
+        size: 'small',
       };
-      setItems([...items, item]);
+      console.log(item);
+      dispatch(addNewItems(item));
       setNewItem({
         name: '',
         description: '',
@@ -130,17 +105,9 @@ const MenuManagement = () => {
       editingItem.description &&
       editingItem.price
     ) {
-      setItems(
-        items.map((item) =>
-          item.id === editingItem.id
-            ? {
-                ...editingItem,
-                price: parseFloat(editingItem.price),
-                rating: editingItem.rating,
-              }
-            : item,
-        ),
-      );
+      console.log(editingItem);
+
+      dispatch(updateProduct(editingItem));
       setEditingItem(null);
     }
   };
@@ -389,7 +356,7 @@ const MenuManagement = () => {
 
           return (
             <div
-              key={item.id}
+              key={item._id}
               className="bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500 transition-all duration-200 overflow-hidden group hover:shadow-lg hover:shadow-orange-500/10 transform hover:-translate-y-1"
             >
               {/* Image */}
@@ -432,14 +399,14 @@ const MenuManagement = () => {
                 {/* Availability Toggle */}
                 <div className="flex items-center justify-between mb-4 ">
                   <button
-                    onClick={() => toggleAvailability(item.id)}
+                    onClick={() => productAvailability(item)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm cursor-pointer ${
-                      item.available
+                      item.isAvailable
                         ? 'bg-green-500 hover:bg-green-600 text-white'
                         : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
                   >
-                    {item.available ? 'Available' : 'Unavailable'}
+                    {item.isAvailable ? 'Available' : 'Unavailable'}
                   </button>
                 </div>
 
@@ -453,7 +420,7 @@ const MenuManagement = () => {
                     <span>Edit</span>
                   </button>
                   <button
-                    onClick={() => deleteItem(item.id)}
+                    onClick={() => deleteItem(item._id)}
                     className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors cursor-pointer"
                   >
                     <Trash2 size={14} />

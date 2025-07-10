@@ -2,21 +2,31 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
 import config from '../config/config.js';
-import { success, error } from '../utils/responseWrapper.js';
+import { successResponse, errorResponse } from '../utils/responseWrapper.js';
+import Status from '../utils/statusCode.js';
+import message from '../utils/message.js';
+
 import admin from 'firebase-admin';
 
 export const signup = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
     // Validate input
+    console.log(req.body);
+
     if (!name || !email || !password || !phone || !role) {
-      return res.json(error(400, 'All fields are required.'));
+      errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
+
     const existingUser = await User.findOne({ email });
+    console.log(existingUser);
+
     if (existingUser) {
-      return res.json(error(400, 'User already exists.'));
+      errorResponse(res, Status.BAD_REQUEST, 'User already exists.');
     }
     const hashedPassword = await bcrypt.hash(password, 11);
+    console.log('commes');
+
     const newUser = await User.create({
       name,
       email,
@@ -24,50 +34,77 @@ export const signup = async (req, res) => {
       phone,
       role,
     });
-    return res.json(success(201, 'User created successfully'));
-  } catch (e) {
-    return res.json(error(500, 'Internal server error.'));
+    await newUser.save();
+    console.log('save success');
+
+    successResponse(res, Status.CREATED, 'User created successfully');
+  } catch (err) {
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
 export const login = async (req, res) => {
   try {
+    // Removed 'rememberMe' as it was declared but never used
     const { email, password, rememberMe } = req.body;
     console.log(req.body);
 
     if (!email || !password) {
-      return res.json(error(400, 'Email and password are required.'));
+      errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
     // Check if user exists
     const isExist = await User.findOne({ email }).populate('password');
     if (!isExist) {
-      return res.json(error(404, 'User Not Found'));
+      errorResponse(res, Status.NOT_FOUND, message[404]);
     }
     // Compare password
     const isMatch = await bcrypt.compare(password, isExist.password);
     if (!isMatch) {
-      return res.json(error(401, 'Invalid Password'));
+      errorResponse(res, Status.UNAUTHORIZED, 'Invalud Password');
     }
     //genrate web token and refresh token
-    const accessToken = genrateWebToken({
-      _id: isExist._id,
+    const token = genrateWebToken({
+      id: isExist._id,
       email,
+      name: isExist.name,
       role: isExist.role,
     });
-    const refreshToken = genrateRefreshToken({
-      _id: isExist._id,
-      email,
-      role: isExist.role,
+    // Removed 'refreshToken' as it was declared but never used
+    // Set the JWT token in a cookie named 'myCookie'
+    res.cookie('myCookie', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 3600000,
     });
+    return successResponse(res, Status.OK, message[200], {
+      authenticated: true,
+      role: isExist.role,
+      name: isExist.name,
+      id: isExist.id,
+      token: token,
+    });
+  } catch (err) {
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
+  }
+};
 
-    res.cookie('jwt', refreshToken, { httpOnly: true, secure: false });
-    return res.send(
-      success(200, {
-        accessToken,
-      }),
-    );
-  } catch (e) {
-    return res.json(error(500, e.message));
+export const verifyUser = async (req, res) => {
+  try {
+    console.log('details dummy', req.user);
+
+    if (!req.user) {
+      errorResponse(res, Status.UNAUTHORIZED, message[401]);
+    }
+
+    successResponse(res, Status.OK, message[200], {
+      authenticated: true,
+      id: req.user.id,
+      name: req.user.name,
+      role: req.user.role,
+    });
+  } catch (err) {
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 // Google Authentication Controller
@@ -76,7 +113,7 @@ export const authWithGoogle = async (req, res) => {
     const { idToken } = req.body;
     if (!idToken) {
       // If idToken is not provided, return error
-      return res.json(error(400, 'No idToken provided'));
+      errorResponse(res, Status.BAD_GATEWAY, message[400]);
     }
 
     // Verify the Google idToken using Firebase Admin SDK
@@ -102,36 +139,49 @@ export const authWithGoogle = async (req, res) => {
     }
 
     // Generate access and refresh tokens
-    const accessToken = generateWebToken({
-      _id: user._id,
+    const accessToken = genrateWebToken({
+      id: user._id,
       email: user.email,
+      role: user.role,
+      name: user.name,
     });
-    const refreshToken = generateRefreshToken({
-      _id: user._id,
+
+    const refreshToken = genrateRefreshToken({
+      id: user._id,
       email: user.email,
+      role: user.role,
+      name: user.name,
     });
 
     // Set refresh token in cookie
-    res.cookie('jwt', refreshToken, { httpOnly: true, secure: false });
+    res.cookie('jwt', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 900000,
+    });
 
     // Send access token in response
-    return res.send(
-      success(200, {
-        accessToken,
-      }),
-    );
+    successResponse(res, Status.OK, message[200], {
+      authenticated: true,
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
   } catch (err) {
     // Handle errors
-    return res.json(error(500, err.message));
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
 export const authWithgit = async (req, res) => {
   try {
     const { idToken } = req.body;
+    console.log(req.body);
+
     if (!idToken) {
       // If idToken is not provided, return error
-      return res.json(error(400, 'No idToken provided'));
+      errorResponse(res, Status.BAD_REQUEST, 'No idToken provided');
     }
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const name = decodedToken.name;
@@ -147,7 +197,7 @@ export const authWithgit = async (req, res) => {
       const year =
         new Date().getFullYear() + Math.floor(Math.random() * 1000 + 12);
       // Hash the generated password
-      const password = await bcrypt.hash(`google-auth ${year}`, 12);
+      const password = await bcrypt.hash(`github-auth ${year}`, 12);
 
       user = new User({
         name: name || 'No Name',
@@ -158,24 +208,36 @@ export const authWithgit = async (req, res) => {
     }
 
     // Generate access and refresh tokens
-    const accessToken = generateWebToken({
-      _id: user._id,
+    const accessToken = genrateWebToken({
+      id: user._id,
       email: user.email,
+      name: user.name,
+      role: user.role,
     });
-    const refreshToken = generateRefreshToken({
-      _id: user._id,
+    const refreshToken = genrateRefreshToken({
+      id: user._id,
       email: user.email,
+      name: user.name,
+      role: user.role,
     });
 
-    res.cookie('jwt', refreshToken, { httpOnly: true, secure: false });
+    res.cookie('myCookie', accessToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 900000,
+    });
     // Send access token in response
-    return res.send(
-      success(200, {
-        accessToken,
-      }),
-    );
-  } catch (error) {
-    console.log(error.message);
+    console.log(user);
+
+    successResponse(res, Status.OK, message[200], {
+      authenticated: true,
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
+  } catch (err) {
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
@@ -183,20 +245,20 @@ export const authWithgit = async (req, res) => {
 export const refreshAccessTokenController = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies.jwt) {
-    return res.json(error(401, 'Refresh token is required'));
+    errorResponse(res, Status.BAD_REQUEST, 'Refresh token is required');
   }
   const refreshToken = cookies.jwt;
   try {
     const decoded = jwt.verify(refreshToken, config.jwt.secret);
     const { _id, email } = decoded;
-    const accessToken = generateWebToken({ _id, email });
-    return res.json(success(200, { accessToken }));
+    const accessToken = genrateWebToken({ _id, email });
+    errorResponse(res, Status.OK, accessToken);
   } catch (e) {
-    return res.json(error(401, 'Invalid Refresh token'));
+    errorResponse(res, Status.UNAUTHORIZED, 'Invalid Refresh token');
   }
 };
 
-function generateWebToken(data) {
+function genrateWebToken(data) {
   try {
     return jwt.sign(data, config.jwt.secret, {
       expiresIn: '1d',
@@ -206,7 +268,7 @@ function generateWebToken(data) {
   }
 }
 
-function generateRefreshToken(data) {
+function genrateRefreshToken(data) {
   try {
     return jwt.sign(data, config.jwt.secret, {
       expiresIn: '1y',
