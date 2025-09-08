@@ -8,13 +8,7 @@ import { signInWithPopup } from 'firebase/auth';
 import axios from 'axios';
 import { setCookie } from '../../utils/utils.js';
 
-const initialState = {
-  isLoading: false,
-  authenticated: false,
-  name: null,
-  id: null,
-  role: null,
-};
+
 
 export const signUp = createAsyncThunk('auth/signup', async (data) => {
   try {
@@ -48,7 +42,7 @@ export const login = createAsyncThunk('auth/login', async (data) => {
     //   },
     // );
     // const res = await verifyres.json();
-    console.log(response.data.data);
+    setCookie('token', response.data.data.token);
 
     return response.data.data;
   } catch (error) {
@@ -63,6 +57,7 @@ export const signInWithGoogle = createAsyncThunk('auth/google', async () => {
     const response = await axios.post('http://localhost:3000/u/verify', {
       idToken,
     });
+    setCookie('token', response.data.data.token);
     return response.data.data;
   } catch (error) {
     console.log(error.message);
@@ -76,13 +71,21 @@ export const signInWithGithub = createAsyncThunk('auth/github', async () => {
     const response = await axios.post('http://localhost:3000/u/gitverify', {
       idToken,
     });
-    console.log(response.data.data);
-
+    setCookie('token', response.data.data.token);
     return response.data.data;
   } catch (error) {
     console.log(error.message);
   }
 });
+
+const initialState = {
+  isLoading: false,
+  authenticated: false,
+  userProfile:{},
+  name: null,
+  id: null,
+  role: null,
+};
 
 const AuthSlice = createSlice({
   name: 'auth',

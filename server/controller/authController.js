@@ -139,7 +139,7 @@ export const authWithGoogle = async (req, res) => {
     }
 
     // Generate access and refresh tokens
-    const accessToken = genrateWebToken({
+    const token = genrateWebToken({
       id: user._id,
       email: user.email,
       role: user.role,
@@ -167,6 +167,7 @@ export const authWithGoogle = async (req, res) => {
       email: user.email,
       name: user.name,
       role: user.role,
+      token: token,
     });
   } catch (err) {
     // Handle errors
@@ -208,7 +209,7 @@ export const authWithgit = async (req, res) => {
     }
 
     // Generate access and refresh tokens
-    const accessToken = genrateWebToken({
+    const token = genrateWebToken({
       id: user._id,
       email: user.email,
       name: user.name,
@@ -221,7 +222,7 @@ export const authWithgit = async (req, res) => {
       role: user.role,
     });
 
-    res.cookie('myCookie', accessToken, {
+    res.cookie('myCookie', refreshToken, {
       httpOnly: true,
       secure: false,
       maxAge: 900000,
@@ -235,6 +236,7 @@ export const authWithgit = async (req, res) => {
       email: user.email,
       name: user.name,
       role: user.role,
+      token: token,
     });
   } catch (err) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);

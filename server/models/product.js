@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema(
   {
@@ -40,23 +40,55 @@ const productSchema = new mongoose.Schema(
       },
     ],
     image: {
-      type: String,
-      url: String,
-      default: null,
+      publicId: { type: String, required: true },
+      url: { type: String, required: true },
     },
+
+    images: [
+      {
+        publicId: { type: String, required: true },
+        url: { type: String, required: true },
+      },
+    ],
+
     isAvailable: {
       type: Boolean,
       default: true,
     },
-    // rating: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Rating',
-    //   },
-    // ],
+    isVeg: {
+      type: Boolean,
+      default: true,
+    },
+
     rating: {
       type: Number,
       default: 1,
+      min: 1,
+      max: 5,
+    },
+
+    reviews: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        rating: { type: Number, min: 1, max: 5, required: true },
+        comment: { type: String, trim: true },
+      },
+    ],
+
+    ingredients: {
+      type: [String],
+      default: [],
+    },
+
+    nutritionInfo: {
+      calories: { type: Number, default: 0 },
+      protein: { type: Number, default: 0 },
+      fat: { type: Number, default: 0 },
+      carbs: { type: Number, default: 0 },
     },
   },
   { timestamps: true },

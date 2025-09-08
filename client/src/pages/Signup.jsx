@@ -19,6 +19,7 @@ const SignupAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,33 +30,26 @@ const SignupAdmin = () => {
   });
 
   const handleChange = (e) => {
-    console.log(e.target.name, e.target.value); // ← Logs name & new value
+    console.log(e.target.name, e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError('');
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    setError('');
-    // setLoading(true);
+    setError(''); // setLoading(true);
     console.log(formData);
-    dispatch(signUp(formData));
-
-    // TODO: Replace with real API call
+    dispatch(signUp(formData)); // TODO: Replace with real API call
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-purple-900 to-pink-700 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Coffee Icons */}
-      <Coffee className="absolute top-10 left-10 w-8 h-8 text-amber-400/30 animate-pulse" />
-      <Coffee className="absolute bottom-20 right-10 w-9 h-9 text-amber-300/30 animate-bounce" />
-
-      <div className="w-full max-w-md z-10">
-        <div className="bg-black/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-purple-500/30">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-black via-purple-900 to-pink-700">
+      {/* Left: Signup Form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-2">
+        <div className="w-full max-w-lg bg-black/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-purple-500/30">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
@@ -64,108 +58,113 @@ const SignupAdmin = () => {
                 Mid-night Cafe
               </h1>
             </div>
-            {/* Footer Links */}
-            <div className="text-center text-sm text-[#C29970] mt-6">
+            <p className="text-sm text-[#C29970]">
               Already have an account?{' '}
               <Link to="/login" className="text-pink-400 hover:underline">
                 Sign in
               </Link>
-            </div>
+            </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Admin Name */}
-            <div>
-              <label
-                htmlFor="name"
-                className="text-[#C29970] text-sm mb-1 block"
-              >
-                Name
-              </label>
-              <div className="relative">
-                <Crown className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  required
-                  onChange={handleChange}
-                  value={formData.name}
-                  placeholder="Enter your name"
-                  className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
-                />
+          {/* Form with grid layout */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name & Email in a row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="text-[#C29970] text-sm mb-1 block"
+                >
+                  Name
+                </label>
+                <div className="relative">
+                  <Crown className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    required
+                    onChange={handleChange}
+                    value={formData.name}
+                    placeholder="Enter your name"
+                    className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c] focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="text-[#C29970] text-sm mb-1 block"
+                >
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    required
+                    onChange={handleChange}
+                    value={formData.email}
+                    placeholder="Enter your email"
+                    className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c] focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="text-[#C29970] text-sm mb-1 block"
-              >
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  required
-                  onChange={handleChange}
-                  value={formData.email}
-                  placeholder="Enter your email"
-                  className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
-                />
+            {/* Phone & Role in a row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="text-[#C29970] text-sm mb-1 block"
+                >
+                  Phone
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    required
+                    maxLength={10}
+                    onChange={handleChange}
+                    value={formData.phone}
+                    placeholder="Phone No."
+                    className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c] focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="role"
+                  className="text-[#C29970] text-sm mb-1 block"
+                >
+                  Role
+                </label>
+                <div className="relative">
+                  <ShieldUser className="absolute left-3 top-7 -translate-y-1/2 text-purple-400" />
+                  <select
+                    id="role"
+                    name="role"
+                    required
+                    onChange={handleChange}
+                    value={formData.role}
+                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  >
+                    <option value="customer">Customer</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="tel"
-                className="text-[#C29970] text-sm mb-1 block"
-              >
-                Phone
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
-                <input
-                  type="tel"
-                  name="phone"
-                  id="tel"
-                  required
-                  maxLength={10}
-                  onChange={handleChange}
-                  value={formData.phone}
-                  placeholder="Enter your Phone Number"
-                  className="w-full pl-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-              <label
-                htmlFor="tel"
-                className="text-[#C29970] text-sm mb-1 block"
-              >
-                Role
-              </label>
-              <ShieldUser className="absolute left-3 top-12 -translate-y-1/2 text-purple-400" />
-              <select
-                id="role"
-                name="role"
-                required
-                onChange={handleChange}
-                value={formData.role}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970]"
-              >
-                <option value="Customer">Customer</option>
-                <option value="Admin">Admin</option>
-              </select>
-            </div>
-
-            {/* Password */}
+            {/* Password (full width) */}
             <div>
               <label
                 htmlFor="password"
@@ -183,19 +182,19 @@ const SignupAdmin = () => {
                   onChange={handleChange}
                   value={formData.password}
                   placeholder="Enter your password"
-                  className="w-full pl-10 pr-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
+                  className="w-full pl-10 pr-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c] focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-pink-400"
                 >
                   {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
             </div>
 
-            {/* Confirm Password */}
+            {/* Confirm Password (full width) */}
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -213,21 +212,20 @@ const SignupAdmin = () => {
                   onChange={handleChange}
                   value={formData.confirmPassword}
                   placeholder="Confirm your password"
-                  className="w-full pl-10 pr-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c]"
+                  className="w-full pl-10 pr-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-[#a78b6c] focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-pink-400"
                 >
                   {showConfirmPassword ? <EyeOff /> : <Eye />}
                 </button>
-                {/* 🔴 Error message */}
               </div>
               {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               onClick={handleSubmit}
@@ -237,6 +235,49 @@ const SignupAdmin = () => {
               {loading ? 'Creating Account...' : 'Create Admin Account'}
             </button>
           </form>
+        </div>
+      </div>
+
+      {/* Right: Signup informative section */}
+      <div className="hidden md:flex md:w-1/2 flex-col p-10 bg-gradient-to-br from-purple-900 via-black to-pink-800 overflow-hidden max-h-screen">
+        <div className="max-w-lg mx-auto text-center text-[#E7D4C0] space-y-8">
+          <h2 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg tracking-wide">
+            Why choose Midnight Café?
+          </h2>
+
+          <p className="text-lg leading-relaxed px-6">
+            At Midnight Café, we believe every cup of coffee should be an
+            experience. Our cozy ambiance and handcrafted brews are designed to
+            inspire, relax, and energize you throughout your day and night.
+          </p>
+
+          <div className="flex ">
+            <div className=" rounded-xl border-r-cyan-200 p-6 shadow-lg  hover:scale-105 cursor-pointer">
+              <Coffee className="mx-auto w-12 h-12 text-yellow-400 mb-4" />
+              <h3 className="text-xl font-semibold text-yellow-400 mb-2">
+                Freshly Brewed
+              </h3>
+              <p className="text-sm">
+                Savor the rich, bold flavors carefully crafted by expert
+                baristas.
+              </p>
+            </div>
+
+            <div className="rounded-xl p-6 shadow-lg  hover:scale-105 cursor-pointer">
+              <Coffee className="mx-auto w-12 h-12 text-yellow-400 mb-4" />
+              <h3 className="text-xl font-semibold text-yellow-400 mb-2">
+                Cozy Ambience
+              </h3>
+              <p className="text-sm">
+                Relax and recharge in our welcoming space designed just for you.
+              </p>
+            </div>
+          </div>
+
+          <p className="mt-10 text-sm italic text-[#C29970] border-t border-yellow-400/50 pt-5 max-w-md mx-auto">
+            “Life happens, coffee helps.” Join us to experience community,
+            comfort, and incredible coffee.
+          </p>
         </div>
       </div>
     </div>

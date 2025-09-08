@@ -5,7 +5,7 @@ const checkRole = (...allowedRoles) => {
   return (req, res, next) => {
     if (allowedRoles.includes(req.user.role)) {
       console.log('inside rolle check');
-      
+
       next();
     } else {
       errorResponse(

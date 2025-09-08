@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Heart,
   ShoppingCart,
@@ -11,6 +11,8 @@ import {
   CircleArrowRight,
 } from 'lucide-react';
 import ProductDetailsModal from './ProductDetailsModel.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProduct } from '../redux/userFeatures/UserProfileSlice.js';
 
 const ProductGrid = ({
   isDarkMode,
@@ -18,132 +20,39 @@ const ProductGrid = ({
   onAddToWishlist,
   wishlistItems,
 }) => {
-  const [products] = useState([
-    {
-      id: 1,
-      name: 'Premium Espresso',
-      price: 4.99,
-      originalPrice: 6.99,
-      rating: 4.8,
-      reviews: 124,
-      image: '/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png',
-      images: ['/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png'],
-      category: 'Coffee',
-      isVeg: true,
-      description:
-        'Rich and bold espresso made from premium arabica beans sourced from the highlands of Colombia.',
-      ingredients: ['Arabica Coffee Beans', 'Water'],
-      nutritionInfo: {
-        calories: 5,
-        protein: '0.3g',
-        carbs: '0g',
-        fat: '0g',
-      },
-    },
-    {
-      id: 2,
-      name: 'Cappuccino Deluxe',
-      price: 5.99,
-      rating: 4.7,
-      reviews: 89,
-      image: '/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png',
-      images: ['/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png'],
-      category: 'Coffee',
-      isVeg: true,
-      description: 'Creamy cappuccino with perfect foam art.',
-      ingredients: ['Espresso', 'Steamed Milk', 'Milk Foam'],
-      nutritionInfo: {
-        calories: 60,
-        protein: '3g',
-        carbs: '5g',
-        fat: '3g',
-      },
-    },
-    {
-      id: 3,
-      name: 'Chocolate Croissant',
-      price: 3.49,
-      rating: 4.6,
-      reviews: 67,
-      image: '/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png',
-      images: ['/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png'],
-      category: 'Pastry',
-      isVeg: true,
-      description: 'Buttery croissant filled with rich chocolate.',
-      ingredients: ['Flour', 'Butter', 'Chocolate', 'Sugar', 'Eggs'],
-      nutritionInfo: {
-        calories: 280,
-        protein: '4g',
-        carbs: '30g',
-        fat: '16g',
-      },
-    },
-    {
-      id: 4,
-      name: 'Blueberry Muffin',
-      price: 2.99,
-      rating: 4.5,
-      reviews: 45,
-      image: '/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png',
-      images: ['/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png'],
-      category: 'Pastry',
-      isVeg: true,
-      description: 'Fresh blueberry muffin with a tender crumb.',
-      ingredients: ['Flour', 'Blueberries', 'Sugar', 'Butter', 'Eggs'],
-      nutritionInfo: {
-        calories: 220,
-        protein: '3g',
-        carbs: '28g',
-        fat: '12g',
-      },
-    },
-    {
-      id: 5,
-      name: 'Latte Supreme',
-      price: 5.49,
-      rating: 4.9,
-      reviews: 78,
-      image: '/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png',
-      images: ['/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png'],
-      category: 'Coffee',
-      isVeg: true,
-      description: 'Smooth latte with house-made vanilla syrup.',
-      ingredients: ['Espresso', 'Steamed Milk', 'Vanilla Syrup'],
-      nutritionInfo: {
-        calories: 80,
-        protein: '3g',
-        carbs: '8g',
-        fat: '3g',
-      },
-    },
-    {
-      id: 6,
-      name: 'Avocado Toast',
-      price: 8.99,
-      rating: 4.4,
-      reviews: 92,
-      image: '/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png',
-      images: ['/lovable-uploads/aac122fa-a5f7-4c6b-83fb-ae354309542d.png'],
-      category: 'Food',
-      isVeg: true,
-      description: 'Fresh avocado on artisan sourdough with lime.',
-      ingredients: ['Avocado', 'Sourdough Bread', 'Lime', 'Sea Salt'],
-      nutritionInfo: {
-        calories: 320,
-        protein: '8g',
-        carbs: '25g',
-        fat: '20g',
-      },
-    },
-  ]);
-
+  const dispatch = useDispatch();
+  const productData = useSelector((state) => state.profile.product);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const [filterVeg, setFilterVeg] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 20]);
+  const [priceRange, setPriceRange] = useState([1, 50]);
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Convert API products to expected format
+
+  const products = Array.isArray(productData)
+    ? productData.map((item) => ({
+        id: item._id,
+        name: item.name,
+        price: item.price,
+        originalPrice: undefined, // API does not provide this
+        rating: item.rating,
+        reviews: 0, // API does not provide this, set to 0 or any default
+        image: item.image?.url,
+        images: [item.image, ...item.images],
+        category: item.category,
+        isVeg: true, // API does not provide, default true (change if you add this field later)
+        description: item.description,
+        ingredients: item.ingredients, // API does not provide
+        nutritionInfo: item.nutritionInfo, // API does not provide
+        isAvailable: item.isAvailable,
+        sizes: item.sizes,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      }))
+    : [];
 
   const isInWishlist = (productId) =>
     wishlistItems.some((item) => item.id === productId);
@@ -169,24 +78,42 @@ const ProductGrid = ({
   };
 
   const filteredProducts = products.filter((product) => {
-    if (filterVeg && !product.isVeg) return false;
-    if (product.price < priceRange[0] || product.price > priceRange[1])
-      return false;
+    // ✅ Filter by Veg/Non-Veg
+    if (filterVeg && product.isVeg === false) {
+      return false; // Exclude non-veg if veg filter is ON
+    }
+
+    // ✅ Filter by Price Range
+    if (product.price < priceRange[0] || product.price > priceRange[1]) {
+      return false; // Exclude outside price range
+    }
+
+    // ✅ Filter by Search Query (name or category)
     if (
       searchQuery &&
       !product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       !product.category.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-      return false;
-    return true;
+    ) {
+      return false; // Exclude if it doesn't match name or category
+    }
+
+    return true; // ✅ Include if it passes all filters
   });
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProducts = filteredProducts.slice(
     startIndex,
     startIndex + itemsPerPage,
   );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, []);
+
+  useEffect(() => {
+    dispatch(getAllProduct());
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -233,8 +160,8 @@ const ProductGrid = ({
               </span>
               <input
                 type="range"
-                min="0"
-                max="20"
+                min="1"
+                max="50"
                 value={priceRange[1]}
                 onChange={(e) =>
                   setPriceRange([priceRange[0], parseInt(e.target.value)])
@@ -255,12 +182,12 @@ const ProductGrid = ({
               }`}
             >
               <option>Selct pages </option>
-              <option value={15}>10 </option>
-              <option value={20}>15 </option>
-              <option value={20}>20 </option>
+              <option value={8}>8 </option>
+              <option value={12}>12 </option>
+              <option value={15}>15 </option>
             </select>
 
-            <div className="flex items-center border rounded-lg">
+            <div className="flex items-center border rounded-lg hidden sm:block ">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-xl cursor-pointer ${
@@ -272,7 +199,7 @@ const ProductGrid = ({
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-xl cursor-pointer ${
-                  viewMode === 'list' ? 'bg-orange-500 text-white' : ''
+                  viewMode === 'list' ? 'bg-orange-500 text-white ' : ''
                 }`}
               >
                 <List className="w-4 h-4" />
@@ -287,7 +214,7 @@ const ProductGrid = ({
         className={`grid gap-4 sm:gap-6 ${
           viewMode === 'grid'
             ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-            : 'grid-cols-1'
+            : 'grid-cols-1 sm:grid-cols-2'
         }`}
       >
         {currentProducts.map((product) => (
@@ -300,7 +227,11 @@ ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                className={`w-full  object-cover group-hover:scale-110 transition-transform duration-300 ${
+                  viewMode == 'grid'
+                    ? 'h-48'
+                    : 'h-48 md:h-80 grid-cols-1 sm:grid-cols-2 '
+                }`}
               />
               <div className="absolute top-3 left-3 flex items-center space-x-2">
                 {product.isVeg && (

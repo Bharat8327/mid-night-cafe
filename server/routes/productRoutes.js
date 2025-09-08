@@ -13,7 +13,7 @@ import checkRole from '../middleware/checkRole.js';
 const routes = express.Router();
 
 routes.post('/products', Protect, checkRole('Admin', 'seller'), createProduct);
-routes.get('/products', getAllProduct);
+routes.get('/products', Protect, checkRole('Admin', 'seller'), getAllProduct);
 routes.get('/products/:id', getProductById);
 routes.put(
   '/products/:id',

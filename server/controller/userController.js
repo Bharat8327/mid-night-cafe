@@ -3,6 +3,7 @@ import Order from '../models/order.js';
 import { successResponse, errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 import message from '../utils/message.js';
+import Product from '../models/product.js';
 
 export const getProfile = async (req, res) => {
   try {
@@ -62,4 +63,20 @@ export const getMyOrderById = async (req, res) => {
   } catch (err) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
+};
+
+export const getAllProduct = async (req, res) => {
+  try {
+    const product = await Product.find();
+    console.log(req.user);
+    successResponse(res, Status.OK, message[200], product);
+  } catch (error) {
+    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
+  }
+};
+
+export const addToCartController = async (req, res) => {
+  console.log(req.user);
+  const  data  = req.body;
+  console.log(data);
 };

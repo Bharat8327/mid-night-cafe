@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import '../../src/index.css';
 import {
   X,
   Heart,
@@ -20,6 +21,7 @@ const ProductDetailsModal = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!isOpen || !product) return null;
+  console.log(product);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
@@ -58,7 +60,7 @@ const ProductDetailsModal = ({
             <div className="space-y-4">
               <div className="relative">
                 <img
-                  src={product.images[currentImageIndex]}
+                  src={product.images[currentImageIndex].url}
                   alt={product.name}
                   className="w-full h-96 object-cover rounded-lg"
                 />
@@ -82,7 +84,7 @@ const ProductDetailsModal = ({
 
               {/* Thumbnails */}
               {product.images.length > 1 && (
-                <div className="flex space-x-2 overflow-x-auto">
+                <div className="flex space-x-2 overflow-x-auto scrollbar-hidden">
                   {product.images.map((img, index) => (
                     <button
                       key={index}
@@ -94,7 +96,7 @@ const ProductDetailsModal = ({
                       }`}
                     >
                       <img
-                        src={img}
+                        src={img.url}
                         alt={`${product.name} ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -206,18 +208,18 @@ const ProductDetailsModal = ({
               </div>
 
               {/* Actions */}
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 ">
                 <button
                   onClick={() => onAddToCart(product)}
-                  className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+                  className="flex-1 cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
                 >
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="w-5 h-5 " />
                   Add to Cart
                 </button>
 
                 <button
                   onClick={() => onAddToWishlist(product)}
-                  className={`p-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${
+                  className={`p-3 cursor-pointer rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${
                     isInWishlist
                       ? 'bg-red-500 text-white hover:bg-red-600'
                       : isDarkMode
@@ -226,7 +228,9 @@ const ProductDetailsModal = ({
                   }`}
                 >
                   <Heart
-                    className={`w-5 h-5 ${isInWishlist ? 'fill-current' : ''}`}
+                    className={`w-5 h-5  ${
+                      isInWishlist ? 'fill-current ' : ''
+                    }`}
                   />
                 </button>
               </div>

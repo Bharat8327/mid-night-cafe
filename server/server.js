@@ -7,6 +7,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import authRoutes from './routes/authRoutes.js';
 import product from './routes/userRoutes.js';
 import createProdct from './routes/productRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 app.use(cookieParser()); // Use cookie-parser middleware
 
@@ -40,6 +41,8 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs)); // Fixed: added l
 app.use('/u', authRoutes);
 app.use('/u', product);
 app.use('/u', createProdct);
+app.use('/product', product);
+app.use('/user/products', paymentRoutes);
 
 app.use((req, res, next) => {
   res.status(404).send('Sorry, the requested resource was not found.');

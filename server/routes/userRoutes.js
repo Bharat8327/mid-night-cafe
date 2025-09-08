@@ -5,6 +5,8 @@ import {
   updateUserProfile,
   getMyOrders,
   getMyOrderById,
+  getAllProduct,
+  addToCartController,
 } from '../controller/userController.js';
 const routes = express.Router();
 
@@ -12,6 +14,9 @@ routes.get('/profile', protect, getProfile);
 routes.put('/profile', protect, updateUserProfile);
 routes.get('/orders', protect, getMyOrders);
 routes.get('/order/:id', protect, getMyOrderById);
+routes.get('/products', protect, getAllProduct);
+
+routes.post('/system/crt', protect, addToCartController);
 
 //Product cart
 // routes.post('/addtocart', addToCartController);

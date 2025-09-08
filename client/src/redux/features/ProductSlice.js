@@ -1,11 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { getCookie } from '../../utils/utils';
 
 export const fetchAllProducts = createAsyncThunk(
   'product/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/u/products`);
+      const token = getCookie('token');
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/u/products`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       return res.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -13,33 +23,35 @@ export const fetchAllProducts = createAsyncThunk(
   },
 );
 export const addNewItems = createAsyncThunk('product/create', async (data) => {
+  console.log(data);
   try {
+    const token = getCookie('token');
     const createProduct = await axios.post(
       `${import.meta.env.VITE_API_URL}/u/products`,
       data,
       {
         headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
+          Authorization: `Bearer ${token}`,
         },
       },
     );
-    return createProduct;
+    return createProduct.data;
   } catch (error) {
-    console.log(error.message);
+    console.log('error comes', error.message);
   }
 });
 export const updateProduct = createAsyncThunk(
   '/product/updateProduct',
   async (data) => {
     try {
-      console.log('this is and availbility', data._id, data);
+      const token = getCookie('token');
 
       const updateAvailbility = await axios.put(
         `${import.meta.env.VITE_API_URL}/u/products/${data._id}`,
         data,
         {
           headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -51,12 +63,13 @@ export const updateProduct = createAsyncThunk(
 );
 export const deleteProduct = createAsyncThunk('/product/delete', async (id) => {
   try {
-    console.log('this is id', id);
+    const token = getCookie('token');
+    console.log(token);
     const productDelte = await axios.delete(
       `${import.meta.env.VITE_API_URL}/u/products/${id}`,
       {
         headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
+          Authorization: `Bearer ${token}`,
         },
       },
     );
@@ -69,13 +82,14 @@ export const deleteProduct = createAsyncThunk('/product/delete', async (id) => {
 export const toggleAvailability = createAsyncThunk(
   '/product/availability',
   async ({ id, isAvailable }) => {
+    const token = getCookie('token');
     try {
       const productAvailability = await axios.put(
         `${import.meta.env.VITE_API_URL}/u/availability/${id}`,
         { isAvailable },
         {
           headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -105,6 +119,7 @@ const ProductSlice = createSlice({
       })
       .addCase(fetchAllProducts.fulfilled, (state, action) => {
         state.isLoading = false;
+
         state.product = action.payload || []; // adjust based on actual response shape
       })
       .addCase(fetchAllProducts.rejected, (state, action) => {

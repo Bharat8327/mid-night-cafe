@@ -5,6 +5,8 @@ import { errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 
 const Protect = async (req, res, next) => {
+  console.log(req.headers.authorization);
+
   if (
     !req.headers ||
     !req.headers.authorization ||
@@ -13,12 +15,9 @@ const Protect = async (req, res, next) => {
     errorResponse(res, Status.UNAUTHORIZED, 'Authorization token are required');
   }
   const token = req.headers.authorization.split(' ')[1];
-  // If token is available, proceed to verify it in the try-catch block below
   try {
     const decode = jwt.verify(token, config.jwt.secret);
     req.user = await User.findById(decode.id).select('-password');
-    console.log('goes next', req.params);
-
     next();
   } catch (err) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);

@@ -13,7 +13,8 @@ app.use(
   }),
 );
 app.use(morgan('dev')); // Use morgan for logging HTTP requests
-app.use(express.json()); // Use express.json() middleware
+app.use(express.json({ limit: '50mb' })); // Increase payload size limit
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const serviceAccount = {
   type: process.env.TYPE,
