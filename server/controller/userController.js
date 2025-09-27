@@ -74,9 +74,3 @@ export const getAllProduct = async (req, res) => {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
-
-export const addToCartController = async (req, res) => {
-  console.log(req.user);
-  const  data  = req.body;
-  console.log(data);
-};

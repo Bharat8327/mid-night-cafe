@@ -14,11 +14,6 @@ const Cart = ({
     0,
   );
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
- 
-
-  
-    
-
 
   if (!isOpen) return null;
 

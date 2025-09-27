@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   User,
   MapPin,
@@ -18,6 +18,7 @@ import { removeCookie } from '../utils/utils.js';
 
 const UserProfile = ({ isDarkMode, isOpen, onClose, userName, userEmail }) => {
   const [activeTab, setActiveTab] = useState('profile');
+  console.log(userEmail, userName);
 
   const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();

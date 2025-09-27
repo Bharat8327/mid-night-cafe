@@ -1,54 +1,57 @@
 import mongoose from 'mongoose';
 
-const orderSchema = mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    products: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-      },
-    ],
-    orderTotal: {
-      type: Number,
-      required: true,
-    },
-    orderStatus: {
-      type: String,
-      enum: ['pending', 'preparing', 'completed', 'cancelled'],
-      default: 'pending',
-    },
-    paymentStatus: {
-      type: String,
-      enum: ['paid', 'unPaid', 'faild'],
-      default: 'unPaid',
-    },
-    paymentMethod: {
-      type: String,
-      enum: ['UPI', 'DEBIT CARD', 'CASH'],
-      default: 'cash',
-    },
-    placedAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    note: {
-      type: String,
-    },
+const orderSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
-  { timestamps: true },
-);
+  cartItems: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+        min: 1,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+  totalAmount: {
+    type: Number,
+    required: true,
+  },
+  razorpayOrderId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  razorpayPaymentId: {
+    type: String,
+  },
+  status: {
+    type: String,
+    enum: ['PENDING', 'PAID', 'FAILED', 'REFUNDED'],
+    default: 'PENDING',
+  },
+  paymentLogs: [
+    {
+      razorpayPaymentId: String,
+      status: String,
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 export default mongoose.model('Order', orderSchema);

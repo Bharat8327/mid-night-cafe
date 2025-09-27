@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCookie } from '../../utils/utils';
+import { getCookie, setCookie } from '../../utils/utils';
 import axios from 'axios';
 
 export const getUserProfile = createAsyncThunk('u/profile', async () => {
@@ -57,6 +57,11 @@ const UserProfileSlice = createSlice({
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
+
+        setCookie('name', action.payload.name);
+        setCookie('email', action.payload.email);
+
+        
         state.userDetails = action.payload;
       });
     builder

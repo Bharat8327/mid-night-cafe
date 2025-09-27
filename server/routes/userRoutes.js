@@ -6,8 +6,17 @@ import {
   getMyOrders,
   getMyOrderById,
   getAllProduct,
-  addToCartController,
 } from '../controller/userController.js';
+import {
+  addToCartController,
+  removeFromCartController,
+  updateQunantityContoller,
+} from '../controller/cartController.js';
+import {
+  addaddToWishlist,
+  getWishlist,
+  removeFromWishList,
+} from '../controller/wishListController.js';
 const routes = express.Router();
 
 routes.get('/profile', protect, getProfile);
@@ -17,9 +26,12 @@ routes.get('/order/:id', protect, getMyOrderById);
 routes.get('/products', protect, getAllProduct);
 
 routes.post('/system/crt', protect, addToCartController);
+routes.put('/product/:id', protect, updateQunantityContoller);
+routes.delete('/system/ucart/:id', protect, removeFromCartController);
 
-//Product cart
-// routes.post('/addtocart', addToCartController);
+routes.post('/wish/add', protect, addaddToWishlist);
+routes.get('/wish', protect, getWishlist);
+routes.delete('/wish/:id', protect, removeFromWishList);
 
 export default routes;
 

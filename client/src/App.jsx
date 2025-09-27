@@ -17,7 +17,10 @@ import MenuManagement from './pages/AdminDashBoard/MenuManagement.jsx';
 import CustomerManagement from './pages/AdminDashBoard/CustomerManagement.jsx';
 import Analytics from './pages/AdminDashBoard/Analytic.jsx';
 
+import { useSocket } from './hooks/useSocket.js';
+
 function App() {
+  useSocket();
   return (
     <>
       {/* Wrap Header and Sidebar here */}

@@ -7,9 +7,9 @@ import Wishlist from './Wishlist.jsx';
 import UserProfile from './UserProfile.jsx';
 import { getCookie } from '../utils/utils.js';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 
 const UserDashboard = () => {
+  const token = getCookie('token');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -17,8 +17,6 @@ const UserDashboard = () => {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  const token = getCookie('token');
-  console.log(cartItems, token); // productId , quantity ,userId
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -30,33 +28,55 @@ const UserDashboard = () => {
     productImage,
     isVeg,
   ) => {
+    let newItem;
+
     setCartItems((prev) => {
       const existingItem = prev.find((item) => item.id === productId);
       if (existingItem) {
-        return prev.map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
+        newItem = { ...existingItem, quantity: existingItem.quantity + 1 };
+        return prev.map((item) => (item.id === productId ? newItem : item));
       }
-      return [
-        ...prev,
-        {
-          id: productId,
-          name: productName,
-          price: productPrice,
-          image: productImage,
-          quantity: 1,
-          isVeg,
-        },
-      ];
+      newItem = {
+        id: productId,
+        name: productName,
+        price: productPrice,
+        image: productImage,
+        quantity: 1,
+        isVeg,
+      };
+      return [...prev, newItem];
     });
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/u/system/crt`,
+        { productId, quantity: 1 }, // <-- use function args directly
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      console.log('Added to backend cart:', response.data);
+    } catch (error) {
+      console.error('Add to cart API error:', error.message);
+    }
   };
 
-  const updateCartQuantity = (id, quantity) => {
+  const updateCartQuantity = async (id, quantity) => {
     if (quantity <= 0) {
-      setCartItems((prev) => prev.filter((item) => item.id !== id));
+      await removeFromCart(id);
     } else {
+      try {
+        const updateQunatityOfProduct = await axios.put(
+          `${import.meta.env.VITE_API_URL}/u/product/${id}`,
+          { quantity },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+      } catch (error) {
+        console.log(error.message);
+      }
       setCartItems((prev) =>
         prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
       );
@@ -68,11 +88,9 @@ const UserDashboard = () => {
       id: value.id,
       quantity: value.quantity,
     }));
-    console.log(data);
-
     try {
       const data1 = await axios.post(
-        `${import.meta.env.VITE_API_URL}/product/system/crt`,
+        `${import.meta.env.VITE_API_URL}/u/system/crt`,
         data,
         {
           headers: {
@@ -80,21 +98,28 @@ const UserDashboard = () => {
           },
         },
       );
-      console.log(data);
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  useEffect(() => {
-    addItemToCart();
-  });
-
-  const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = async (id) => {
+    try {
+      const removeItem = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/u/system/ucart/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setCartItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
   };
 
-  const addToWishlist = (
+  const addToWishlist = async (
     productId,
     productName,
     productPrice,
@@ -103,6 +128,19 @@ const UserDashboard = () => {
   ) => {
     const exists = wishlistItems.find((item) => item.id === productId);
     if (!exists) {
+      try {
+        const addToWishlist = await axios.post(
+          `${import.meta.env.VITE_API_URL}/u/wish/add`,
+          {
+            productId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+      } catch (error) {}
       setWishlistItems((prev) => [
         ...prev,
         {
@@ -119,11 +157,41 @@ const UserDashboard = () => {
     }
   };
 
-  const removeFromWishlist = (id) => {
-    setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+  const removeFromWishlist = async (id) => {
+    try {
+      const wishList = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/u/wish/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
-  const addWishlistItemToCart = (id) => {
+  const getWishlist = async () => {
+    try {
+      const wishList = await axios.get(
+        `${import.meta.env.VITE_API_URL}/u/wish`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  // useEffect(() => {
+  //   getWishlist();
+  // });
+
+  const addWishlistItemToCart = async (id) => {
     const wishlistItem = wishlistItems.find((item) => item.id === id);
     if (wishlistItem) {
       addToCart(
@@ -145,24 +213,20 @@ const UserDashboard = () => {
       receipt: `${import.meta.env.VITE_RECEIPT_ID}`,
     };
     console.log(data.amount);
-    const token = getCookie('token');
     try {
-      const response = await axios.post(
+      const response1 = await axios.post(
         'http://localhost:3000/user/products/pay',
         data,
-        { Authorization: `Bearer ${token}` },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-
-      console.log(response.data);
-
       const options = {
-        key: 'rzp_live_REO2wgstoE4Bjg', // Enter the Key ID generated from the Dashboard
+        key: 'rzp_test_RERFcbJxWkDGqY', // Enter the Key ID generated from the Dashboard
         amount: 10000 * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         currency: 'INR',
         name: 'Acme Corp',
         description: 'Test Transaction',
         image: 'https://example.com/your_logo',
-        order_id: response.data.data.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        order_id: response1.data.data.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
         handler: async function (response) {
           const body = {
             ...response,
@@ -170,10 +234,10 @@ const UserDashboard = () => {
 
           const validateRes = await axios.post(
             'http://localhost:3000/user/products/validate',
-            body,
-            { Authorization: `Bearer ${token}` },
+            { ...body, dbOrderId: response1?.data?.data?.dbOrderId },
+            { headers: { Authorization: `Bearer ${token}` } },
           );
-          console.log(validateRes);
+          console.log('payment validation res ', validateRes);
         },
         prefill: {
           name: 'Patelji',
@@ -189,10 +253,10 @@ const UserDashboard = () => {
       };
       var rzp1 = new window.Razorpay(options);
       rzp1.on('payment.failed', function (response) {
-        alert(response.error.code);
-        alert(response.error.description);
-        alert(response.error.source);
-        alert(response.error.step);
+        // alert(response.error.code);
+        // alert(response.error.description);
+        // alert(response.error.source);
+        // alert(response.error.step);
         alert(response.error.reason);
         alert(response.error.metadata.order_id);
         alert(response.error.metadata.payment_id);
