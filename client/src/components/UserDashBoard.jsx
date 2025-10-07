@@ -334,8 +334,10 @@ const UserDashboard = () => {
         isDarkMode={isDarkMode}
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
-        userName="John Doe"
-        userEmail="john.doe@example.com"
+        name={getCookie('name')}
+        email={getCookie('email')}
+        mobile={getCookie('mobile')}
+        address={getCookie('address')}
       />
 
       <Chatbot isDarkMode={isDarkMode} />

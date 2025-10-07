@@ -16,6 +16,7 @@ const Homepage = () => {
   const role = useSelector((state) => state.auth.role);
   const authenticated = useSelector((state) => state.auth.authenticated);
 
+
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(authenticated);
   const [isDarkMode, setIsDarkMode] = useState(true);

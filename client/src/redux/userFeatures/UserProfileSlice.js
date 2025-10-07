@@ -6,7 +6,6 @@ export const getUserProfile = createAsyncThunk('u/profile', async () => {
   try {
     const token = getCookie('token');
     const id = getCookie('id');
-    console.log(token);
 
     const { data } = await axios.get(
       `${import.meta.env.VITE_API_URL}/u/profile`,
@@ -16,6 +15,8 @@ export const getUserProfile = createAsyncThunk('u/profile', async () => {
         },
       },
     );
+    console.log('details of the user ', data.data);
+
     return data.data;
   } catch (error) {
     console.log(error.message);
@@ -56,12 +57,13 @@ const UserProfileSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
+        console.log('from the store user details ', action.payload);
+
         state.isLoading = false;
-
-        setCookie('name', action.payload.name);
+        setCookie('name', action.payload.fullName);
         setCookie('email', action.payload.email);
-
-        
+        setCookie('mobile', action.payload.mobile);
+        setCookie('address', action.payload.location);
         state.userDetails = action.payload;
       });
     builder
