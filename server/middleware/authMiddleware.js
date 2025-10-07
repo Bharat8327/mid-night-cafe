@@ -5,8 +5,6 @@ import { errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 
 const Protect = async (req, res, next) => {
-  console.log('comes here');
-
   if (
     !req.headers ||
     !req.headers.authorization ||

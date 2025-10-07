@@ -6,6 +6,10 @@ import {
   getMyOrders,
   getMyOrderById,
   getAllProduct,
+  addNewLocationController,
+  getAllLocation,
+  updateExistingAddress,
+  updateDefaultAddress,
 } from '../controller/userController.js';
 import {
   addToCartController,
@@ -20,7 +24,13 @@ import {
 const routes = express.Router();
 
 routes.get('/profile', protect, getProfile);
+// routes.get('/profile/details', protect, getProfile);
 routes.put('/profile', protect, updateUserProfile);
+routes.post('/loc/add', protect, addNewLocationController);
+routes.get('/loc', protect, getAllLocation);
+routes.put('/address', protect, updateExistingAddress);
+routes.put('/default', protect, updateDefaultAddress);
+
 routes.get('/orders', protect, getMyOrders);
 routes.get('/order/:id', protect, getMyOrderById);
 routes.get('/products', protect, getAllProduct);
