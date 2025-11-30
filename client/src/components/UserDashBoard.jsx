@@ -46,17 +46,41 @@ const UserDashboard = () => {
       };
       return [...prev, newItem];
     });
-
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/u/system/crt`,
         { productId, quantity: 1 }, // <-- use function args directly
         { headers: { Authorization: `Bearer ${token}` } },
       );
-
-      console.log('Added to backend cart:', response.data);
     } catch (error) {
       console.error('Add to cart API error:', error.message);
+    }
+  };
+
+  const fetchCartItems = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/u/system/gcrt`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      const cartData = response.data.data; // backend structure
+      const items = cartData.items || [];
+
+      const formatted = items.map((item) => ({
+        id: item.productId,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        quantity: item.quantity,
+        isVeg: item.isVeg ?? false,
+      }));
+
+      setCartItems(formatted);
+    } catch (error) {
+      console.error('Fetch cart error:', error.message);
     }
   };
 
@@ -119,54 +143,45 @@ const UserDashboard = () => {
     }
   };
 
-  const addToWishlist = async (
-    productId,
-    productName,
-    productPrice,
-    productImage,
-    isVeg,
-  ) => {
-    const exists = wishlistItems.find((item) => item.id === productId);
-    if (!exists) {
-      try {
-        const addToWishlist = await axios.post(
-          `${import.meta.env.VITE_API_URL}/u/wish/add`,
-          {
-            productId,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-      } catch (error) {}
+  const addToWishlist = async (productId) => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/u/wish/add`,
+        { productId },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      const isRemoved = res?.data?.data?.status === 'removed';
+
+      if (isRemoved) {
+        setWishlistItems((prev) => prev.filter((i) => i.id !== productId));
+        return;
+      }
+
+      const p = res.data.data.item.product;
+
       setWishlistItems((prev) => [
         ...prev,
         {
-          id: productId,
-          name: productName,
-          price: productPrice,
-          image: productImage,
-          isVeg,
+          id: p._id,
+          name: p.name,
+          price: p.price,
+          image: p.image,
+          isVeg: p.isVeg,
           addedDate: new Date().toISOString(),
         },
       ]);
-    } else {
-      removeFromWishlist(productId);
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
   const removeFromWishlist = async (id) => {
     try {
-      const wishList = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/u/wish/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await axios.delete(`${import.meta.env.VITE_API_URL}/u/wish/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setWishlistItems((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.log(error.message);
@@ -175,24 +190,29 @@ const UserDashboard = () => {
 
   const getWishlist = async () => {
     try {
-      const wishList = await axios.get(
-        `${import.meta.env.VITE_API_URL}/u/wish`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/u/wish`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const formatted = res.data.data.map((item) => ({
+        id: item.product._id,
+        name: item.product.name,
+        price: item.product.price,
+        image: item.product.image,
+        isVeg: item.product.isVeg,
+        addedDate: item.createdAt,
+      }));
+
+      setWishlistItems(formatted);
     } catch (error) {
       console.log(error.message);
     }
   };
-  // useEffect(() => {
-  //   getWishlist();
-  // });
 
   const addWishlistItemToCart = async (id) => {
-    const wishlistItem = wishlistItems.find((item) => item.id === id);
+    const wishlistItem = wishlistItems.find(
+      (item) => item?.product?._id === id,
+    );
     if (wishlistItem) {
       addToCart(
         wishlistItem.id,
@@ -201,7 +221,7 @@ const UserDashboard = () => {
         wishlistItem.image,
         wishlistItem.isVeg,
       );
-      removeFromWishlist(id);
+      removeFromWishlist(wishlistItem.id);
     }
   };
 
@@ -268,6 +288,11 @@ const UserDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    getWishlist();
+    fetchCartItems();
+  }, []);
+
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
@@ -279,7 +304,7 @@ const UserDashboard = () => {
         toggleDarkMode={toggleDarkMode}
         cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
         wishlistCount={wishlistItems.length}
-        userName="John Doe"
+        userName={getCookie('name')}
         onCartClick={() => setIsCartOpen(true)}
         onWishlistClick={() => setIsWishlistOpen(true)}
         onProfileClick={() => setIsProfileOpen(true)}

@@ -1,15 +1,26 @@
-import React from 'react';
-import { X, Plus } from 'lucide-react';
-const Addresses = ({
-  openAddAddressModal,
-  setDefaultAddress,
-  openEditAddressModal,
-  handleSaveAddress,
-  isAddressModalOpen,
-  setIsAddressModalOpen,
-  setAddressForm,
-}) => {
-  const [addresses, setAddresses] = useState([]);
+import axios from 'axios';
+import {
+  User,
+  MapPin,
+  Package,
+  CreditCard,
+  Settings,
+  X,
+  Edit2,
+  Download,
+  ShoppingCart,
+  LogOut,
+  Plus,
+} from 'lucide-react';
+import { useState } from 'react';
+import { getCookie } from '../../utils/utils';
+
+const Addresses = ({ addresses, isDarkMode, setAddresses }) => {
+  const [editMode, setEditMode] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+
   const [addressForm, setAddressForm] = useState({
     label: 'Home',
     street: '',
@@ -19,6 +30,137 @@ const Addresses = ({
     postalCode: '',
     isDefault: false,
   });
+
+  const validateAddressForm = () => {
+    const errors = {};
+
+    if (!addressForm.label.trim()) errors.label = 'Label is required';
+    if (!addressForm.street.trim())
+      errors.street = 'Street address is required';
+    if (!addressForm.city.trim()) errors.city = 'City is required';
+    if (!addressForm.state.trim()) errors.state = 'State is required';
+    if (!addressForm.country.trim()) errors.country = 'Country is required';
+    if (!addressForm.postalCode.trim())
+      errors.postalCode = 'Postal code is required';
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const openAddAddressModal = () => {
+    setEditingAddress(null);
+    setAddressForm({
+      label: 'Home',
+      street: '',
+      city: '',
+      state: '',
+      country: '',
+      postalCode: '',
+      isDefault: addresses.length === 0,
+    });
+    setFormErrors({});
+    setIsAddressModalOpen(true);
+  };
+
+  const openEditAddressModal = (address) => {
+    setEditingAddress(address);
+    setAddressForm({
+      label: address.label,
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      country: address.country,
+      postalCode: address.postalCode,
+      isDefault: address.isDefault,
+    });
+    setFormErrors({});
+    setIsAddressModalOpen(true);
+  };
+
+  const handleSaveAddress = async () => {
+    if (!validateAddressForm()) return;
+
+    if (editingAddress) {
+      const updatedAddresses = addresses.map((addr) => {
+        if (addr._id === editingAddress._id) {
+          return { ...addr, ...addressForm };
+        }
+        if (addressForm.isDefault) {
+          return { ...addr, isDefault: false };
+        }
+        return addr;
+      });
+      setAddresses(updatedAddresses);
+      const updatedAdd = {
+        id: editingAddress._id,
+        ...addressForm,
+      };
+      try {
+        const updateExistingAddress = await axios.put(
+          `${import.meta.env.VITE_API_URL}/u/address`,
+          updatedAdd,
+          {
+            headers: {
+              Authorization: `Bearer ${getCookie('token')}`,
+            },
+          },
+        );
+        console.log('updated existing user ', updateExistingAddress);
+      } catch (error) {
+        console.log(error.message);
+      }
+    } else {
+      const newAddress = {
+        id: Math.max(...addresses.map((a) => a.id || 0), 0) + 1,
+        ...addressForm,
+      };
+
+      if (addressForm.isDefault) {
+        setAddresses([
+          ...addresses.map((a) => ({ ...a, isDefault: false })),
+          newAddress,
+        ]);
+      } else {
+        setAddresses([...addresses, newAddress]);
+      }
+      try {
+        const responseAdd = await axios.post(
+          `${import.meta.env.VITE_API_URL}/u/loc/add`,
+          newAddress,
+          {
+            headers: {
+              Authorization: `Bearer ${getCookie('token')}`,
+            },
+          },
+        );
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+    setIsAddressModalOpen(false);
+  };
+
+  const setDefaultAddress = async (id) => {
+    const updatedAddresses = addresses.map((addr) => ({
+      ...addr,
+      isDefault: addr._id === id,
+    }));
+    setAddresses(updatedAddresses);
+    try {
+      const updateDefaultAddress = await axios.put(
+        `${import.meta.env.VITE_API_URL}/u/default`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${getCookie('token')}`,
+          },
+        },
+      );
+    } catch (error) {
+      console.log('error occurs ', error.message);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

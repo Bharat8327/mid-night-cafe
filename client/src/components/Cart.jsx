@@ -9,13 +9,14 @@ const Cart = ({
   onRemoveItem,
   onCheckout,
 }) => {
+  if (!isOpen) return null;
+
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  if (!isOpen) return null;
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
@@ -36,9 +37,10 @@ const Cart = ({
             <ShoppingBag className="w-6 h-6 text-orange-500" />
             <h2 className="text-xl font-bold">Cart ({totalItems} items)</h2>
           </div>
+
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors cursor-pointer"
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -65,11 +67,13 @@ const Cart = ({
                   isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
                 }`}
               >
+                {/* Image Fix: auto handles string OR object */}
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={item?.image?.url || item?.image || '/placeholder.png'}
+                  alt={item?.name}
                   className="w-16 h-16 object-cover rounded-lg"
                 />
+
                 <div className="flex-1">
                   <h3 className="font-semibold text-sm">{item.name}</h3>
                   <div className="flex items-center space-x-2 mt-1">
@@ -78,35 +82,41 @@ const Cart = ({
                         🌱 VEG
                       </span>
                     )}
+
                     <span className="text-orange-600 font-bold">
-                      ${item.price}
+                      ₹{item.price}
                     </span>
                   </div>
+
+                  {/* Quantity Controls */}
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() =>
                           onUpdateQuantity(
                             item.id,
-                            Math.max(0, item.quantity - 1),
+                            Math.max(1, item.quantity - 1),
                           )
                         }
-                        className="p-1 rounded bg-gray-200 dark:bg-gray-500 hover:bg-gray-300 dark:hover:bg-red-500 cursor-pointer"
+                        className="p-1 rounded bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 cursor-pointer"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
+
                       <span className="w-8 text-center font-semibold">
                         {item.quantity}
                       </span>
+
                       <button
                         onClick={() =>
                           onUpdateQuantity(item.id, item.quantity + 1)
                         }
-                        className="p-1 rounded bg-gray-200 dark:bg-gray-500 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"
+                        className="p-1 rounded bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 cursor-pointer"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
+
                     <button
                       onClick={() => onRemoveItem(item.id)}
                       className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
@@ -132,9 +142,10 @@ const Cart = ({
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-xl font-bold text-orange-600">
-                ${totalAmount.toFixed(2)}
+                ₹{totalAmount.toFixed(2)}
               </span>
             </div>
+
             <button
               onClick={onCheckout}
               className="w-full cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"

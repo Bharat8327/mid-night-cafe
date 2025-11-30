@@ -1,17 +1,5 @@
-import React from 'react';
-import {
-  User,
-  MapPin,
-  Package,
-  CreditCard,
-  Settings,
-  X,
-  Edit2,
-  Download,
-  ShoppingCart,
-  LogOut,
-  Plus,
-} from 'lucide-react';
+import { Edit2 } from 'lucide-react';
+
 const Profile = ({
   editMode,
   setEditMode,
@@ -20,8 +8,6 @@ const Profile = ({
   setProfileData,
   updateUserDetails,
 }) => {
-  console.log(editMode, setEditMode, profileData, setProfileData);
-
   return (
     <div>
       <div className="space-y-6">
@@ -125,14 +111,3 @@ const Profile = ({
 };
 
 export default Profile;
-
-//   {activeTab === 'profile' && (
-//               <Profile
-//                 editMode={editMode}
-//                 setEditMode={setEditMode}
-//                 profileData={profileData}
-//                 setProfileData={setProfileData}
-//                 isDarkMode={isDarkMode}
-//                 updateUserDetails={updateUserDetails}
-//               />
-//             )}

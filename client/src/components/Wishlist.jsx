@@ -11,6 +11,8 @@ const Wishlist = ({
   if (!isOpen) return null;
 
   const formatDate = (dateString) => {
+    console.log(wishlistItems);
+
     const date = new Date(dateString);
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - date.getTime());
@@ -66,43 +68,49 @@ const Wishlist = ({
           ) : (
             wishlistItems.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className={`p-4 rounded-lg shadow-md ${
                   isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'
                 }`}
               >
                 <div className="flex items-start space-x-3">
                   <img
-                    src={item.image}
-                    alt={item.name}
+                    src={item?.image?.url || '/placeholder.png'}
+                    alt={item?.name}
                     className="w-20 h-20 object-cover rounded-lg"
                   />
+
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-semibold text-lg">{item.name}</h3>
+                      <h3 className="font-semibold text-lg">{item?.name}</h3>
+
                       <button
-                        onClick={() => onRemoveItem(item.id)}
+                        onClick={() => onRemoveItem(item?.id)}
                         className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
+
                     <div className="flex items-center space-x-2 mt-2">
-                      {item.isVeg && (
+                      {item?.isVeg && (
                         <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                           🌱 VEG
                         </span>
                       )}
+
                       <span className="text-orange-600 font-bold text-lg">
-                        ${item.price}
+                        ${item?.price}
                       </span>
                     </div>
+
                     <div className="flex items-center space-x-1 mt-2 text-sm text-gray-500">
                       <Calendar className="w-4 h-4" />
-                      <span>Added {formatDate(item.addedDate)}</span>
+                      <span>Added {formatDate(item?.addedDate)}</span>
                     </div>
+
                     <button
-                      onClick={() => onAddToCart(item.id)}
+                      onClick={() => onAddToCart(item?._id)}
                       className="mt-3 w-full cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
                     >
                       <ShoppingCart className="w-4 h-4" />
