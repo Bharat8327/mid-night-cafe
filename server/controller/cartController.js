@@ -4,6 +4,7 @@ import { errorResponse, successResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 import message from '../utils/message.js';
 import mongoose from 'mongoose';
+import User from '../models/user.js';
 
 export const addToCartController = async (req, res) => {
   try {
@@ -119,6 +120,39 @@ export const updateQunantityContoller = async (req, res) => {
     cart.totalPrice = quantity * price;
     cart.save();
     return successResponse(res, Status.OK, message[200]);
+  } catch (error) {
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+export const getCartItems = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const cart = await Cart.findOne({ user: userId }).populate(
+      'items.product',
+      'name price image images category', // pick fields you need
+    );
+
+    if (!cart) {
+      return errorResponse(res, Status.NOT_FOUND, 'Cart not found');
+    }
+
+    // Extract only required fields
+    const formattedItems = cart.items.map((item) => ({
+      productId: item.product._id,
+      name: item.product.name,
+      price: item.product.price,
+      image: item.product.image?.url || null,
+      quantity: item.quantity,
+      totalItemPrice: item.product.price * item.quantity,
+    }));
+
+    // Final response
+    return successResponse(res, Status.OK, 'Cart fetched successfully', {
+      items: formattedItems,
+      totalPrice: cart.totalPrice,
+    });
   } catch (error) {
     return errorResponse(res, Status.INTERNAL_SERVER_ERROR, error.message);
   }

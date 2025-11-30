@@ -14,6 +14,7 @@ import {
 import {
   addToCartController,
   removeFromCartController,
+  getCartItems,
   updateQunantityContoller,
 } from '../controller/cartController.js';
 import {
@@ -35,6 +36,7 @@ routes.get('/orders', protect, getMyOrders);
 routes.get('/order/:id', protect, getMyOrderById);
 routes.get('/products', protect, getAllProduct);
 
+routes.get('/system/gcrt', protect, getCartItems);
 routes.post('/system/crt', protect, addToCartController);
 routes.put('/product/:id', protect, updateQunantityContoller);
 routes.delete('/system/ucart/:id', protect, removeFromCartController);

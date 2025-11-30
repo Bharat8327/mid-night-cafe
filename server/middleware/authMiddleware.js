@@ -16,6 +16,7 @@ const Protect = async (req, res, next) => {
   try {
     const decode = jwt.verify(token, config.jwt.secret);
     req.user = await User.findById(decode.id).select('-password');
+
     next();
   } catch (err) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
