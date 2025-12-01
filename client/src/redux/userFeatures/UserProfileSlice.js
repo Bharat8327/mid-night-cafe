@@ -15,7 +15,6 @@ export const getUserProfile = createAsyncThunk('u/profile', async () => {
         },
       },
     );
-    console.log('details of the user ', data.data);
 
     return data.data;
   } catch (error) {
@@ -57,8 +56,6 @@ const UserProfileSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
-        console.log('from the store user details ', action.payload);
-
         state.isLoading = false;
         setCookie('name', action.payload.fullName);
         setCookie('email', action.payload.email);

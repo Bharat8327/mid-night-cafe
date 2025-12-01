@@ -7,12 +7,11 @@ const Wishlist = ({
   wishlistItems,
   onRemoveItem,
   onAddToCart,
+  wishlistToCart,
 }) => {
   if (!isOpen) return null;
 
   const formatDate = (dateString) => {
-    console.log(wishlistItems);
-
     const date = new Date(dateString);
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - date.getTime());
@@ -66,9 +65,9 @@ const Wishlist = ({
               </p>
             </div>
           ) : (
-            wishlistItems.map((item) => (
+            wishlistItems.map((item, idx) => (
               <div
-                key={item._id}
+                key={idx}
                 className={`p-4 rounded-lg shadow-md ${
                   isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'
                 }`}
@@ -85,6 +84,7 @@ const Wishlist = ({
                       <h3 className="font-semibold text-lg">{item?.name}</h3>
 
                       <button
+                        disabled={wishlistToCart}
                         onClick={() => onRemoveItem(item?.id)}
                         className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                       >
@@ -100,7 +100,7 @@ const Wishlist = ({
                       )}
 
                       <span className="text-orange-600 font-bold text-lg">
-                        ${item?.price}
+                        ₹{item?.price}
                       </span>
                     </div>
 
@@ -110,6 +110,7 @@ const Wishlist = ({
                     </div>
 
                     <button
+                      disabled={wishlistToCart}
                       onClick={() => onAddToCart(item?._id)}
                       className="mt-3 w-full cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
                     >

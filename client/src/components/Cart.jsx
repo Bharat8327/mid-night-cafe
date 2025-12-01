@@ -8,6 +8,8 @@ const Cart = ({
   onUpdateQuantity,
   onRemoveItem,
   onCheckout,
+  activeCheckOut,
+  removeToCart,
 }) => {
   if (!isOpen) return null;
 
@@ -60,9 +62,9 @@ const Cart = ({
               </p>
             </div>
           ) : (
-            cartItems.map((item) => (
+            cartItems.map((item, idx) => (
               <div
-                key={item.id}
+                key={idx}
                 className={`flex items-center space-x-3 p-3 rounded-lg ${
                   isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
                 }`}
@@ -118,6 +120,7 @@ const Cart = ({
                     </div>
 
                     <button
+                      disabled={removeToCart}
                       onClick={() => onRemoveItem(item.id)}
                       className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                     >
@@ -147,6 +150,7 @@ const Cart = ({
             </div>
 
             <button
+              disabled={activeCheckOut}
               onClick={onCheckout}
               className="w-full cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
             >

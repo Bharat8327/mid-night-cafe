@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft, Coffee } from 'lucide-react';
+import { notifyError, notifySuccess } from '../utils/toast';
 
 const ResetPassword = () => {
   const [formData, setFormData] = useState({
@@ -10,11 +11,6 @@ const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState({
-    message: '',
-    type: 'info',
-    visible: false,
-  });
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -26,10 +22,6 @@ const ResetPassword = () => {
     }
   }, [email, navigate]);
 
-  const showToast = (message, type) => {
-    setToast({ message, type, visible: true });
-  };
-
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -39,34 +31,23 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-
     if (formData.password !== formData.confirmPassword) {
-      //   showToast('Passwords do not match', 'error');
-      console.log('password donesnt match');
-
-      //   return;
+      notifyError('Password do not match');
     }
-
     if (formData.password.length < 6) {
-      //   showToast('Password must be at least 6 characters', 'error');
-      console.log('password must more than 6');
-
-      //   return;
+      notifyError('Password must be at least 6 characters');
+      return;
     }
-
     setLoading(true);
-
     try {
-      //   const success = await updatePassword(email, formData.password);
       if (1) {
-        // showToast('Password updated successfully!', 'success');
+        notifyError('Password updated successfully!');
         setTimeout(() => (navigate('/login'), setLoading(false)), 6000);
       } else {
-        showToast('Failed to update password', 'error');
+        notifyError('Failed to update password');
       }
     } catch (error) {
-      showToast('Something went wrong. Please try again.', 'error');
+      notifyError('Something went wrong. Please try again.');
     }
   };
 

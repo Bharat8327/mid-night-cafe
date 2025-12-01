@@ -7,6 +7,7 @@ import Wishlist from './Wishlist.jsx';
 import UserProfile from './UserProfile.jsx';
 import { getCookie } from '../utils/utils.js';
 import axios from 'axios';
+import { notifySuccess, notifyError } from '../utils/toast.js';
 
 const UserDashboard = () => {
   const token = getCookie('token');
@@ -16,6 +17,12 @@ const UserDashboard = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const [activeCart, setActiveCart] = useState(false);
+  const [activeWish, setActiveWish] = useState(false);
+  const [activeCheckOut, setActiveCheckOut] = useState(false);
+  const [wishlistToCart, setWishlistToCart] = useState(false);
+  const [removeToCart, setRemoveToCart] = useState(false);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -28,6 +35,7 @@ const UserDashboard = () => {
     productImage,
     isVeg,
   ) => {
+    setActiveCart(true);
     let newItem;
 
     setCartItems((prev) => {
@@ -46,14 +54,20 @@ const UserDashboard = () => {
       };
       return [...prev, newItem];
     });
+
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/u/system/crt`,
-        { productId, quantity: 1 }, // <-- use function args directly
+        { productId, quantity: 1 },
         { headers: { Authorization: `Bearer ${token}` } },
       );
+
+      notifySuccess('Added to cart');
     } catch (error) {
       console.error('Add to cart API error:', error.message);
+      notifyError('Failed to add item to cart');
+    } finally {
+      setActiveCart(false);
     }
   };
 
@@ -61,12 +75,10 @@ const UserDashboard = () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/u/system/gcrt`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
-      const cartData = response.data.data; // backend structure
+      const cartData = response.data.data;
       const items = cartData.items || [];
 
       const formatted = items.map((item) => ({
@@ -81,6 +93,7 @@ const UserDashboard = () => {
       setCartItems(formatted);
     } catch (error) {
       console.error('Fetch cart error:', error.message);
+      notifyError('Failed to load cart');
     }
   };
 
@@ -89,62 +102,46 @@ const UserDashboard = () => {
       await removeFromCart(id);
     } else {
       try {
-        const updateQunatityOfProduct = await axios.put(
+        await axios.put(
           `${import.meta.env.VITE_API_URL}/u/product/${id}`,
           { quantity },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
+          { headers: { Authorization: `Bearer ${token}` } },
         );
+
+        notifySuccess('Cart updated');
       } catch (error) {
         console.log(error.message);
+        notifyError('Failed to update quantity');
       }
+
       setCartItems((prev) =>
         prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
       );
     }
   };
 
-  const addItemToCart = async () => {
-    const data = cartItems.map((value) => ({
-      id: value.id,
-      quantity: value.quantity,
-    }));
-    try {
-      const data1 = await axios.post(
-        `${import.meta.env.VITE_API_URL}/u/system/crt`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const removeFromCart = async (id) => {
+    setRemoveToCart(true);
     try {
-      const removeItem = await axios.delete(
+      await axios.delete(
         `${import.meta.env.VITE_API_URL}/u/system/ucart/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
+
       setCartItems((prev) => prev.filter((item) => item.id !== id));
+      notifySuccess('Removed from cart');
     } catch (error) {
       console.log(error.response?.data || error.message);
+      notifyError('Failed to remove item from cart');
+    } finally {
+      setRemoveToCart(false);
     }
   };
 
   const addToWishlist = async (productId) => {
     try {
+      setActiveWish(true);
+
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/u/wish/add`,
         { productId },
@@ -155,6 +152,7 @@ const UserDashboard = () => {
 
       if (isRemoved) {
         setWishlistItems((prev) => prev.filter((i) => i.id !== productId));
+        notifySuccess('Removed from wishlist');
         return;
       }
 
@@ -171,20 +169,29 @@ const UserDashboard = () => {
           addedDate: new Date().toISOString(),
         },
       ]);
+
+      notifySuccess('Added to wishlist');
     } catch (error) {
       console.log(error.message);
+      notifyError('Failed to add to wishlist');
+    } finally {
+      setActiveWish(false);
     }
   };
 
   const removeFromWishlist = async (id) => {
+    setWishlistToCart(true);
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL}/u/wish/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+      notifySuccess('Removed from wishlist');
     } catch (error) {
-      console.log(error.message);
+      notifyError('Failed to remove Item');
+    } finally {
+      setWishlistToCart(false);
     }
   };
 
@@ -206,33 +213,40 @@ const UserDashboard = () => {
       setWishlistItems(formatted);
     } catch (error) {
       console.log(error.message);
+      notifyError('Failed to load wishlist');
     }
   };
 
   const addWishlistItemToCart = async (id) => {
-    const wishlistItem = wishlistItems.find(
-      (item) => item?.product?._id === id,
-    );
+    setWishlistToCart(true);
+
+    const wishlistItem = wishlistItems.find((item) => item.id === id);
+
     if (wishlistItem) {
-      addToCart(
+      await addToCart(
         wishlistItem.id,
         wishlistItem.name,
         wishlistItem.price,
         wishlistItem.image,
         wishlistItem.isVeg,
       );
-      removeFromWishlist(wishlistItem.id);
+
+      await removeFromWishlist(wishlistItem.id);
+
+      notifySuccess('Moved to cart');
     }
+
+    setWishlistToCart(false);
   };
 
   const handleCheckout = async (e) => {
     e.preventDefault();
+    setActiveCheckOut(true);
     const data = {
       amount: 1 * 100,
       currency: 'INR',
       receipt: `${import.meta.env.VITE_RECEIPT_ID}`,
     };
-    console.log(data.amount);
     try {
       const response1 = await axios.post(
         'http://localhost:3000/user/products/pay',
@@ -285,6 +299,8 @@ const UserDashboard = () => {
       e.preventDefault();
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setActiveCheckOut(false);
     }
   };
 
@@ -333,6 +349,8 @@ const UserDashboard = () => {
           onAddToCart={addToCart}
           onAddToWishlist={addToWishlist}
           wishlistItems={wishlistItems}
+          activeCart={activeCart}
+          activeWish={activeWish}
         />
       </main>
 
@@ -344,6 +362,8 @@ const UserDashboard = () => {
         onUpdateQuantity={updateCartQuantity}
         onRemoveItem={removeFromCart}
         onCheckout={handleCheckout}
+        activeCheckOut={activeCheckOut}
+        removeToCart={removeToCart}
       />
 
       <Wishlist
@@ -353,6 +373,7 @@ const UserDashboard = () => {
         wishlistItems={wishlistItems}
         onRemoveItem={removeFromWishlist}
         onAddToCart={addWishlistItemToCart}
+        wishlistToCart={wishlistToCart}
       />
 
       <UserProfile

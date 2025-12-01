@@ -2,7 +2,6 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useNavigate } from 'react-router-dom';
 export const generateCafeInvoice = (order, cafe, owner, customer) => {
-  console.log(order, 'cafe details ', cafe, owner, customer);
   const doc = new jsPDF('p', 'pt', 'a4');
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();

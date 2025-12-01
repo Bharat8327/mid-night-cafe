@@ -23,7 +23,6 @@ export const fetchAllProducts = createAsyncThunk(
   },
 );
 export const addNewItems = createAsyncThunk('product/create', async (data) => {
-  console.log(data);
   try {
     const token = getCookie('token');
     const createProduct = await axios.post(
@@ -55,7 +54,6 @@ export const updateProduct = createAsyncThunk(
           },
         },
       );
-      console.log(updateAvailbility);
     } catch (error) {
       console.log(error.message);
     }
@@ -64,7 +62,6 @@ export const updateProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk('/product/delete', async (id) => {
   try {
     const token = getCookie('token');
-    console.log(token);
     const productDelte = await axios.delete(
       `${import.meta.env.VITE_API_URL}/u/products/${id}`,
       {
@@ -73,7 +70,6 @@ export const deleteProduct = createAsyncThunk('/product/delete', async (id) => {
         },
       },
     );
-    console.log(productDelte);
     return productDelte.data;
   } catch (error) {
     console.log(error.message);
@@ -93,7 +89,6 @@ export const toggleAvailability = createAsyncThunk(
           },
         },
       );
-      console.log(productAvailability);
       return productAvailability.data;
     } catch (error) {
       console.log(error.message);

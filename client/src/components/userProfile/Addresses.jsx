@@ -105,7 +105,6 @@ const Addresses = ({ addresses, isDarkMode, setAddresses }) => {
             },
           },
         );
-        console.log('updated existing user ', updateExistingAddress);
       } catch (error) {
         console.log(error.message);
       }

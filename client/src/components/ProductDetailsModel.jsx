@@ -16,12 +16,13 @@ const ProductDetailsModal = ({
   onAddToCart,
   onAddToWishlist,
   isInWishlist,
+  activeCart,
+  activeWish,
   isDarkMode,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!isOpen || !product) return null;
-  console.log(product);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
@@ -129,11 +130,11 @@ const ProductDetailsModal = ({
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="font-bold text-2xl text-orange-600">
-                      ${product.price}
+                      ₹{product.price}
                     </span>
                     {product.originalPrice && (
                       <span className="text-lg text-gray-500 line-through">
-                        ${product.originalPrice}
+                        ₹{product.originalPrice}
                       </span>
                     )}
                   </div>
@@ -210,6 +211,7 @@ const ProductDetailsModal = ({
               {/* Actions */}
               <div className="flex space-x-4 ">
                 <button
+                  disabled={activeCart}
                   onClick={() => onAddToCart(product)}
                   className="flex-1 cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
                 >
@@ -218,6 +220,7 @@ const ProductDetailsModal = ({
                 </button>
 
                 <button
+                  disabled={activeWish}
                   onClick={() => onAddToWishlist(product)}
                   className={`p-3 cursor-pointer rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${
                     isInWishlist

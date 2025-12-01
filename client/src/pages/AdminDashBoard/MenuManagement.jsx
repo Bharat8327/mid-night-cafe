@@ -169,8 +169,6 @@ const MenuManagement = () => {
 
   // Reset form for new item
   const resetNewItem = () => {
-    console.log(newItem);
-
     // setNewItem({
     //   name: '',
     //   description: '',

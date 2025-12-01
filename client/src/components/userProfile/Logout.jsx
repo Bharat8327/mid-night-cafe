@@ -1,7 +1,10 @@
 import { LogOut } from 'lucide-react';
 import { removeCookie } from '../../utils/utils';
 import { useNavigate } from 'react-router-dom';
+import { notifySuccess } from '../../utils/toast.js';
+
 const Logout = ({ isDarkMode, onClose, setActiveTab }) => {
+  const navigate = useNavigate();
   const handleLogout = () => {
     removeCookie('authenticated');
     removeCookie('id');
@@ -12,8 +15,8 @@ const Logout = ({ isDarkMode, onClose, setActiveTab }) => {
     removeCookie('mobile');
     onClose();
     navigate('/login');
+    notifySuccess('logout Successfully');
   };
-  const navigate = useNavigate();
 
   return (
     <div>

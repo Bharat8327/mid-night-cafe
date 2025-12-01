@@ -30,7 +30,6 @@ function Login() {
     setLoading(!loading);
     setTimeout(() => {
       setLoading(!!loading);
-      console.log(formData);
     }, 8000);
   };
 
@@ -58,7 +57,6 @@ function Login() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-    console.log(formData);
   };
 
   return (

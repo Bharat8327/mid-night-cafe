@@ -8,8 +8,6 @@ import { signInWithPopup } from 'firebase/auth';
 import axios from 'axios';
 import { setCookie } from '../../utils/utils.js';
 
-
-
 export const signUp = createAsyncThunk('auth/signup', async (data) => {
   try {
     const response = await axios.post(
@@ -81,7 +79,7 @@ export const signInWithGithub = createAsyncThunk('auth/github', async () => {
 const initialState = {
   isLoading: false,
   authenticated: false,
-  userProfile:{},
+  userProfile: {},
   name: null,
   id: null,
   role: null,
@@ -132,8 +130,6 @@ const AuthSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(signInWithGithub.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.isLoading = false;
         state.authenticated = action.payload.authenticated;
         state.name = action.payload.name;
@@ -152,7 +148,6 @@ const AuthSlice = createSlice({
       })
       .addCase(signUp.fulfilled, (state, action) => {
         state.isLoading = false;
-        console.log(action.payload);
       });
   },
 });
