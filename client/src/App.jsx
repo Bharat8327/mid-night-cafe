@@ -1,23 +1,21 @@
 import { Routes, Route } from 'react-router-dom';
-import ProtectRoutes from './components/protectRoutes.jsx';
-import OpenRoutes from './components/OpenRoutes.jsx';
-// import AdminLayout from './pages/AdminDashBoard/AdminLayout.jsx';
 
-import HomePage from './pages/HomePage.jsx';
-import Login from './pages/Login.jsx';
-import Signup from './pages/Signup.jsx';
-import ForgotPassword from './pages/ForgotPassword.jsx';
-import OTPVerification from './pages/OtpVerification.jsx';
-import ResetPassword from './pages/resetPassword.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import UserDashBoard from '../src/components/UserDashBoard.jsx';
+import HomePage from './pages/auth/HomePage.jsx';
+import Login from './pages/auth/Login.jsx';
+import Signup from './pages/auth/Signup.jsx';
+import ForgotPassword from './pages/auth/ForgotPassword.jsx';
+import OTPVerification from './pages/auth/OtpVerification.jsx';
+import ResetPassword from './pages/auth/resetPassword.jsx';
+import UserDashBoard from './pages/user/UserDashBoard.jsx';
 
-import OrdersOverview from './pages/AdminDashBoard/OrderOverview.jsx';
-import MenuManagement from './pages/AdminDashBoard/MenuManagement.jsx';
-import CustomerManagement from './pages/AdminDashBoard/CustomerManagement.jsx';
-import Analytics from './pages/AdminDashBoard/Analytic.jsx';
+import OrdersOverview from './pages/admin/OrderOverview.jsx';
+import MenuManagement from './pages/admin/MenuManagement.jsx';
+import CustomerManagement from './pages/admin/CustomerManagement.jsx';
+import Analytics from './pages/admin/Analytic.jsx';
 
 import { useSocket } from './hooks/useSocket.js';
+import OpenRoutes from './routes/OpenRoutes.jsx';
+import ProtectRoutes from './routes/ProtectRoutes.jsx';
 
 function App() {
   useSocket();

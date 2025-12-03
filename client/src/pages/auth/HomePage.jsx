@@ -9,7 +9,7 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import { getCookie } from '../utils/utils.js';
+import { getCookie } from '../../utils/utils.js';
 import { useSelector } from 'react-redux';
 
 const Homepage = () => {

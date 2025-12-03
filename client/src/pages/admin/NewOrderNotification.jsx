@@ -2,8 +2,8 @@ import { X, Clock, User, MapPin, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const NewOrderNotification = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
   const navigate = useNavigate();
+  if (!isOpen) return null;
 
   const currentOrders = [
     {

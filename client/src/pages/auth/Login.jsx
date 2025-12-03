@@ -5,13 +5,12 @@ import {
   login,
   signInWithGithub,
   signInWithGoogle,
-} from '../redux/features/AuthSlice.js';
+} from '../../redux/features/AuthSlice.js';
 import { useDispatch } from 'react-redux';
-import { getUserProfile } from '../redux/userFeatures/UserProfileSlice.js';
+import { getUserProfile } from '../../redux/userFeatures/UserProfileSlice.js';
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -20,8 +19,14 @@ function Login() {
     rememberMe: false,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [gogAuthDisable, setGogAuthDisable] = useState(false);
+  const [gitAuthDisable, setGitAuthDisable] = useState(false);
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
+
     dispatch(login(formData))
       .unwrap()
       .then(() => {
@@ -31,23 +36,28 @@ function Login() {
     setTimeout(() => {
       setLoading(!!loading);
     }, 8000);
+    setLoading(false);
   };
 
   const googleAuth = () => {
+    setGogAuthDisable(true);
     dispatch(signInWithGoogle())
       .unwrap()
       .then(() => {
         navigate('/dashboard');
         dispatch(getUserProfile());
+        setGogAuthDisable(false);
       });
   };
 
   const githubAuth = () => {
+    setGitAuthDisable(true);
     dispatch(signInWithGithub())
       .unwrap()
       .then(() => {
         navigate('/dashboard');
         dispatch(getUserProfile());
+        setGitAuthDisable(false);
       });
   };
 
@@ -190,6 +200,7 @@ function Login() {
               </div>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <button
+                  disabled={gogAuthDisable}
                   onClick={googleAuth}
                   className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
                 >
@@ -203,6 +214,7 @@ function Login() {
                   <span className="ml-2 text-[#D1B394]">Google</span>
                 </button>
                 <button
+                  disabled={gitAuthDisable}
                   onClick={githubAuth}
                   className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
                 >

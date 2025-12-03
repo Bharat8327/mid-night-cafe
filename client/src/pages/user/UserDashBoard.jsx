@@ -5,9 +5,9 @@ import Chatbot from './Chatbot.jsx';
 import Cart from './Cart.jsx';
 import Wishlist from './Wishlist.jsx';
 import UserProfile from './UserProfile.jsx';
-import { getCookie } from '../utils/utils.js';
+import { getCookie } from '../../utils/utils.js';
 import axios from 'axios';
-import { notifySuccess, notifyError } from '../utils/toast.js';
+import { notifySuccess, notifyError } from '../../utils/toast.js';
 
 const UserDashboard = () => {
   const token = getCookie('token');
@@ -223,15 +223,18 @@ const UserDashboard = () => {
     const wishlistItem = wishlistItems.find((item) => item.id === id);
 
     if (wishlistItem) {
-      await addToCart(
-        wishlistItem.id,
-        wishlistItem.name,
-        wishlistItem.price,
-        wishlistItem.image,
-        wishlistItem.isVeg,
-      );
-
-      await removeFromWishlist(wishlistItem.id);
+      try {
+        await addToCart(
+          wishlistItem.id,
+          wishlistItem.name,
+          wishlistItem.price,
+          wishlistItem.image,
+          wishlistItem.isVeg,
+        );
+        await removeFromWishlist(wishlistItem.id);
+      } catch (error) {
+        notifyError(error.message);
+      }
 
       notifySuccess('Moved to cart');
     }

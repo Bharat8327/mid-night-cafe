@@ -18,6 +18,7 @@ const MenuManagement = () => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [loading, setLoadig] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [newItem, setNewItem] = useState({
     name: '',
@@ -35,7 +36,12 @@ const MenuManagement = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchAllProducts());
+    setLoadig(true);
+    dispatch(fetchAllProducts())
+      .unwrap()
+      .then(() => {
+        setLoadig(false);
+      });
   }, [dispatch]);
 
   useEffect(() => {
@@ -885,112 +891,120 @@ const MenuManagement = () => {
         </div>
       )}
       {/* Items Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredItems.map((item) => {
-          const categoryConfig = getCategoryConfig(item.category);
-          return (
-            <div
-              key={item._id}
-              className="bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500 transition-all duration-200 overflow-hidden group hover:shadow-lg hover:shadow-orange-500/10 transform hover:-translate-y-1"
-              role="group"
-              aria-label={`${item.name} product card`}
-            >
-              {/* Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={item.image?.url || '/placeholder.svg'}
-                  alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="absolute top-3 right-3 flex items-center space-x-1">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium text-white ${categoryConfig.color}`}
-                    aria-label={`Category: ${item.category}`}
-                  >
-                    {categoryConfig.icon} {item.category}
-                  </span>
-                </div>
-                {item.rating > 0 && (
-                  <div
-                    className="absolute bottom-3 left-3 flex items-center space-x-1 bg-black bg-opacity-50 px-2 py-1 rounded-full"
-                    aria-label={`Rating: ${item.rating} out of 5`}
-                  >
-                    <Star
-                      size={12}
-                      className="text-yellow-400 fill-current"
-                      aria-hidden="true"
-                    />
-                    <span className="text-white text-xs font-medium">
-                      {item.rating.toFixed(1)}
+      {loading ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm z-50">
+          <div className="w-10 h-10 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredItems.map((item) => {
+            const categoryConfig = getCategoryConfig(item.category);
+            return (
+              <div
+                key={item._id}
+                className="bg-slate-800 rounded-xl border border-slate-700 hover:border-orange-500 transition-all duration-200 overflow-hidden group hover:shadow-lg hover:shadow-orange-500/10 transform hover:-translate-y-1"
+                role="group"
+                aria-label={`${item.name} product card`}
+              >
+                {/* Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={item.image?.url || '/placeholder.svg'}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="absolute top-3 right-3 flex items-center space-x-1">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium text-white ${categoryConfig.color}`}
+                      aria-label={`Category: ${item.category}`}
+                    >
+                      {categoryConfig.icon} {item.category}
                     </span>
                   </div>
-                )}
+                  {item.rating > 0 && (
+                    <div
+                      className="absolute bottom-3 left-3 flex items-center space-x-1 bg-black bg-opacity-50 px-2 py-1 rounded-full"
+                      aria-label={`Rating: ${item.rating} out of 5`}
+                    >
+                      <Star
+                        size={12}
+                        className="text-yellow-400 fill-current"
+                        aria-hidden="true"
+                      />
+                      <span className="text-white text-xs font-medium">
+                        {item.rating.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-white font-bold text-lg">
+                      {item.name}
+                    </h3>
+                    <span
+                      className="text-orange-400 font-bold text-xl"
+                      aria-label={`Price $${item.price.toFixed(2)}`}
+                    >
+                      ${item.price.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <p
+                    className="text-slate-400 mb-4 text-sm line-clamp-2"
+                    aria-label={`Description: ${item.description}`}
+                  >
+                    {item.description}
+                  </p>
+
+                  {/* Availability */}
+                  <div className="flex items-center justify-between mb-4">
+                    <button
+                      onClick={() => productAvailability(item)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm cursor-pointer ${
+                        item.isAvailable
+                          ? 'bg-green-500 hover:bg-green-600 text-white'
+                          : 'bg-red-500 hover:bg-red-600 text-white'
+                      }`}
+                      aria-pressed={item.isAvailable}
+                      aria-label={
+                        item.isAvailable
+                          ? 'Mark as unavailable'
+                          : 'Mark as available'
+                      }
+                    >
+                      {item.isAvailable ? 'Available' : 'Unavailable'}
+                    </button>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setEditingItem(item)}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm cursor-pointer"
+                      aria-label={`Edit ${item.name}`}
+                    >
+                      <Edit size={14} aria-hidden="true" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => deleteItem(item._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors cursor-pointer"
+                      aria-label={`Delete ${item.name}`}
+                    >
+                      <Trash2 size={14} aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-white font-bold text-lg">{item.name}</h3>
-                  <span
-                    className="text-orange-400 font-bold text-xl"
-                    aria-label={`Price $${item.price.toFixed(2)}`}
-                  >
-                    ${item.price.toFixed(2)}
-                  </span>
-                </div>
-
-                <p
-                  className="text-slate-400 mb-4 text-sm line-clamp-2"
-                  aria-label={`Description: ${item.description}`}
-                >
-                  {item.description}
-                </p>
-
-                {/* Availability */}
-                <div className="flex items-center justify-between mb-4">
-                  <button
-                    onClick={() => productAvailability(item)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm cursor-pointer ${
-                      item.isAvailable
-                        ? 'bg-green-500 hover:bg-green-600 text-white'
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                    }`}
-                    aria-pressed={item.isAvailable}
-                    aria-label={
-                      item.isAvailable
-                        ? 'Mark as unavailable'
-                        : 'Mark as available'
-                    }
-                  >
-                    {item.isAvailable ? 'Available' : 'Unavailable'}
-                  </button>
-                </div>
-
-                {/* Actions */}
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setEditingItem(item)}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm cursor-pointer"
-                    aria-label={`Edit ${item.name}`}
-                  >
-                    <Edit size={14} aria-hidden="true" />
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    onClick={() => deleteItem(item._id)}
-                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors cursor-pointer"
-                    aria-label={`Delete ${item.name}`}
-                  >
-                    <Trash2 size={14} aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

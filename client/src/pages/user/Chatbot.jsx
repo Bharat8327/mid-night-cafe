@@ -32,7 +32,6 @@ const Chatbot = ({ isDarkMode }) => {
 
   return (
     <>
-      {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 z-50 cursor-pointer ${
@@ -42,7 +41,6 @@ const Chatbot = ({ isDarkMode }) => {
         <MessageCircle className="w-6 h-6" />
       </button>
 
-      {/* Chat Window */}
       {isOpen && (
         <div
           className={`fixed bottom-6 right-6 w-80 h-96 rounded-2xl shadow-2xl z-50 flex flex-col  ${
@@ -51,7 +49,6 @@ const Chatbot = ({ isDarkMode }) => {
               : 'bg-white border border-gray-200'
           }`}
         >
-          {/* Header */}
           <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-t-2xl flex items-center justify-between ">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -67,7 +64,6 @@ const Chatbot = ({ isDarkMode }) => {
             </button>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3">
             {messages.map((message) => (
               <div
@@ -91,7 +87,6 @@ const Chatbot = ({ isDarkMode }) => {
             ))}
           </div>
 
-          {/* Input */}
           <div
             className={`p-4 border-t ${
               isDarkMode ? 'border-gray-700' : 'border-gray-200'

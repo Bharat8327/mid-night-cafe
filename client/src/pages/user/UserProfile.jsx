@@ -13,12 +13,12 @@ import {
   Plus,
 } from 'lucide-react';
 
-import { getCookie, setCookie } from '../utils/utils.js';
+import { getCookie, setCookie } from '../../utils/utils.js';
 import axios from 'axios';
-import Profile from './userProfile/Profile.jsx';
-import Order from './userProfile/Order.jsx';
-import Logout from './userProfile/Logout.jsx';
-import Addresses from './userProfile/Addresses.jsx';
+import Profile from './Profile.jsx';
+import Order from './Order.jsx';
+import Logout from './Logout.jsx';
+import Addresses from './Addresses.jsx';
 
 const UserProfile = ({
   isDarkMode,
@@ -143,7 +143,7 @@ const UserProfile = ({
               <User className="w-6 h-6 text-white" />
             </div>
             <div>
-            <h2 className="text-xl sm:text-2xl font-bold">My Profile</h2>
+              <h2 className="text-xl sm:text-2xl font-bold">My Profile</h2>
               <p
                 className={`text-sm ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'

@@ -27,7 +27,6 @@ const Cart = ({
           isDarkMode ? 'bg-gray-900' : 'bg-white'
         } shadow-2xl overflow-y-auto`}
       >
-        {/* Header */}
         <div
           className={`sticky top-0 p-4 border-b ${
             isDarkMode
@@ -48,7 +47,6 @@ const Cart = ({
           </button>
         </div>
 
-        {/* Cart Items */}
         <div className="p-4 space-y-4">
           {cartItems.length === 0 ? (
             <div className="text-center py-8">
@@ -69,7 +67,6 @@ const Cart = ({
                   isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
                 }`}
               >
-                {/* Image Fix: auto handles string OR object */}
                 <img
                   src={item?.image?.url || item?.image || '/placeholder.png'}
                   alt={item?.name}
@@ -90,7 +87,6 @@ const Cart = ({
                     </span>
                   </div>
 
-                  {/* Quantity Controls */}
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center space-x-2">
                       <button
@@ -133,7 +129,6 @@ const Cart = ({
           )}
         </div>
 
-        {/* Checkout Section */}
         {cartItems.length > 0 && (
           <div
             className={`sticky bottom-0 p-4 border-t ${

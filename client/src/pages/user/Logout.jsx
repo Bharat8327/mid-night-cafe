@@ -1,5 +1,5 @@
 import { LogOut } from 'lucide-react';
-import { removeCookie } from '../../utils/utils';
+import { removeCookie } from '../../utils/utils.js';
 import { useNavigate } from 'react-router-dom';
 import { notifySuccess } from '../../utils/toast.js';
 

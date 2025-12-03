@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import Header from '../pages/AdminDashBoard/Header.jsx';
-import Sidebar from '../pages/AdminDashBoard/SideBar.jsx';
+import Header from '../pages/admin/Header.jsx';
+import Sidebar from '../pages/admin/SideBar.jsx';
 import { getCookie, removeCookie } from '../utils/utils.js';
 
 function ProtectRoutes({ roles }) {

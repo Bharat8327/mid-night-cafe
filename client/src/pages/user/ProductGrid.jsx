@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import ProductDetailsModal from './ProductDetailsModel.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllProduct } from '../redux/userFeatures/UserProfileSlice.js';
+import { getAllProduct } from '../../redux/userFeatures/UserProfileSlice.js';
 
 const ProductGrid = ({
   isDarkMode,

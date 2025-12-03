@@ -96,15 +96,15 @@ const AuthSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.authenticated = action.payload.authenticated;
-        state.name = action.payload.name;
-        state.id = action.payload.id;
-        state.role = action.payload.role;
+        state.authenticated = action?.payload?.authenticated;
+        state.name = action?.payload?.name;
+        state.id = action?.payload?.id;
+        state.role = action?.payload?.role;
 
-        setCookie('name', action.payload.name);
-        setCookie('id', action.payload.id);
-        setCookie('role', action.payload.role);
-        setCookie('authenticated', action.payload.authenticated);
+        setCookie('name', action?.payload?.name);
+        setCookie('id', action?.payload?.id);
+        setCookie('role', action?.payload?.role);
+        setCookie('authenticated', action?.payload?.authenticated);
       });
 
     // for google auth

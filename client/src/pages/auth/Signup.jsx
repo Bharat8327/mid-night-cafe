@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signUp } from '../redux/features/AuthSlice.js';
+import { signUp } from '../../redux/features/AuthSlice.js';
 import {
   Crown,
   Mail,

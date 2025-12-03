@@ -1,17 +1,5 @@
 import axios from 'axios';
-import {
-  User,
-  MapPin,
-  Package,
-  CreditCard,
-  Settings,
-  X,
-  Edit2,
-  Download,
-  ShoppingCart,
-  LogOut,
-  Plus,
-} from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { getCookie } from '../../utils/utils';
 
@@ -222,7 +210,6 @@ const Addresses = ({ addresses, isDarkMode, setAddresses }) => {
         ))}
       </div>
 
-      {/* Add/Edit Address Modal */}
       {isAddressModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex justify-center items-center p-4">
           <div

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft, Coffee } from 'lucide-react';
-import { notifyError, notifySuccess } from '../utils/toast';
+import { notifyError, notifySuccess } from '../../utils/toast';
 
 const ResetPassword = () => {
   const [formData, setFormData] = useState({

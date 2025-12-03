@@ -111,7 +111,7 @@ const Wishlist = ({
 
                     <button
                       disabled={wishlistToCart}
-                      onClick={() => onAddToCart(item?._id)}
+                      onClick={() => onAddToCart(item?.id)}
                       className="mt-3 w-full cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
                     >
                       <ShoppingCart className="w-4 h-4" />
