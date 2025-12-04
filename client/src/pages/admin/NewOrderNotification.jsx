@@ -31,7 +31,6 @@ const NewOrderNotification = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
@@ -50,7 +49,6 @@ const NewOrderNotification = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Orders List */}
         <div className="p-6 space-y-4 max-h-96 overflow-y-auto">
           {currentOrders.map((order) => (
             <div
@@ -116,7 +114,6 @@ const NewOrderNotification = ({ isOpen, onClose }) => {
           ))}
         </div>
 
-        {/* Footer */}
         <div className="p-6 border-t border-slate-700 bg-slate-750">
           <button
             onClick={() => {

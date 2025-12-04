@@ -5,7 +5,7 @@ import { notifyError, notifySuccess } from '../utils/toast.js';
 
 export const useSocket = () => {
   useEffect(() => {
-    const userId = getCookie('id'); // get user ID from cookie
+    const userId = getCookie('id');
     if (!userId) return;
     socket.connect(); // connect to backend
     socket.emit('register', userId); // join user room

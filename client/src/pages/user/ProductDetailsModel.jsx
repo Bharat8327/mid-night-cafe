@@ -57,7 +57,6 @@ const ProductDetailsModal = ({
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Image Gallery */}
             <div className="space-y-4">
               <div className="relative">
                 <img
@@ -83,7 +82,6 @@ const ProductDetailsModal = ({
                 )}
               </div>
 
-              {/* Thumbnails */}
               {product.images.length > 1 && (
                 <div className="flex space-x-2 overflow-x-auto scrollbar-hidden">
                   {product.images.map((img, index) => (
@@ -107,7 +105,6 @@ const ProductDetailsModal = ({
               )}
             </div>
 
-            {/* Product Details */}
             <div className="space-y-6">
               <div>
                 <div className="flex items-center space-x-2 mb-2">
@@ -165,7 +162,6 @@ const ProductDetailsModal = ({
                 </p>
               </div>
 
-              {/* Ingredients */}
               <div>
                 <h3 className="font-bold text-lg mb-3">Ingredients</h3>
                 <div className="flex flex-wrap gap-2">
@@ -184,7 +180,6 @@ const ProductDetailsModal = ({
                 </div>
               </div>
 
-              {/* Nutrition Info */}
               <div>
                 <h3 className="font-bold text-lg mb-3">
                   Nutrition Information
@@ -208,7 +203,6 @@ const ProductDetailsModal = ({
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex space-x-4 ">
                 <button
                   disabled={activeCart}

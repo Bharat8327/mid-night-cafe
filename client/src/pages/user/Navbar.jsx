@@ -31,9 +31,7 @@ const Navbar = ({
             </span>
           </div>
 
-          {/* Right Side - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
               className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 cursor-pointer ${
@@ -49,7 +47,6 @@ const Navbar = ({
               )}
             </button>
 
-            {/* Wishlist */}
             <button
               onClick={onWishlistClick}
               className="relative p-2 rounded-lg  hover:bg-gray-500 transition-all duration-200 hover:scale-110"
@@ -62,7 +59,6 @@ const Navbar = ({
               )}
             </button>
 
-            {/* Cart */}
             <button
               onClick={onCartClick}
               className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200 hover:scale-110 cursor-pointer"
@@ -75,7 +71,6 @@ const Navbar = ({
               )}
             </button>
 
-            {/* User Profile */}
             <button
               onClick={onProfileClick}
               className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200 hover:scale-105 cursor-pointer"
@@ -91,7 +86,6 @@ const Navbar = ({
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -106,7 +100,6 @@ const Navbar = ({
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">

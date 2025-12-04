@@ -31,17 +31,7 @@ export const login = createAsyncThunk('auth/login', async (data) => {
       },
       { withCredentials: true },
     );
-
-    // const verifyres = await fetch(
-    //   `${import.meta.env.VITE_API_URL}/u/auth/verify`,
-    //   {
-    //     method: 'POST',
-    //     credentials: 'include',
-    //   },
-    // );
-    // const res = await verifyres.json();
     setCookie('token', response.data.data.token);
-
     return response.data.data;
   } catch (error) {
     console.log(error.message);

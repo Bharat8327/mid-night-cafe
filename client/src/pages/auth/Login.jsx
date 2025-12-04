@@ -71,7 +71,6 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col md:flex-row overflow-hidden">
-      {/* Left Side: Login form */}
       <div className="w-full md:w-1/2 flex items-center justify-center  md:p-12">
         <div className="w-full max-w-md relative z-10">
           <div className="bg-black/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-purple-500/30 relative">
@@ -98,7 +97,6 @@ function Login() {
               </p>
             </div>
 
-            {/* Form (same as your original, unchanged) */}
             <form onSubmit={handleFormSubmit} className="space-y-6">
               <div>
                 <label
@@ -186,7 +184,6 @@ function Login() {
               </button>
             </form>
 
-            {/* Social sign-in and signup */}
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -243,7 +240,6 @@ function Login() {
         </div>
       </div>
 
-      {/* Right Side: Informative Cafe Section */}
       <div className="w-full md:w-1/2 hidden md:flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-800 relative p-10">
         <div className="max-w-lg text-center text-[#E7D4C0] space-y-6">
           <h2 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg">

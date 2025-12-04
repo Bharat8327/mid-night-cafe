@@ -41,7 +41,6 @@ const Homepage = () => {
           : 'bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 text-gray-900'
       }`}
     >
-      {/* Dark Mode Toggle */}
       <div className="absolute top-4 right-4 z-10">
         <button
           onClick={toggleDarkMode}
@@ -59,7 +58,6 @@ const Homepage = () => {
         </button>
       </div>
 
-      {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div
           className={`absolute inset-0 ${
@@ -110,7 +108,6 @@ const Homepage = () => {
         </div>
       </div>
 
-      {/* Features Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
           <h2
@@ -207,7 +204,6 @@ const Homepage = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white mb-6">

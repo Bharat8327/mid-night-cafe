@@ -16,7 +16,6 @@ function ForgotPassword() {
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900/40 to-sky-700/20 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative Coffee Icons */}
       <Coffee className="absolute top-10 left-10 w-8 h-8 text-amber-400/30 animate-pulse" />
       <Coffee className="absolute top-20 right-16 w-6 h-6 text-orange-400/40 animate-bounce" />
       <Coffee className="absolute bottom-16 left-16 w-7 h-7 text-yellow-400/35 animate-pulse" />
@@ -26,7 +25,6 @@ function ForgotPassword() {
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-black/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 animate-fadeInUp border border-purple-500/30 relative">
-          {/* Additional decorative icons around the form */}
           <Coffee
             className="absolute -top-4 -left-4 w-8 h-8 text-amber-400 animate-spin"
             style={{ animationDuration: '8s' }}

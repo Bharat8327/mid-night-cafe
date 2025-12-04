@@ -14,7 +14,6 @@ const MenuManagement = () => {
   const product = useSelector((state) => state.product.product || []);
   const dispatch = useDispatch();
 
-  // States
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -48,7 +47,6 @@ const MenuManagement = () => {
     setItems(product);
   }, [product]);
 
-  // Filtering by search term
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -65,7 +63,6 @@ const MenuManagement = () => {
     }
   };
 
-  // Category config
   const getCategoryConfig = (category) => {
     switch (category) {
       case 'coffee':
@@ -106,19 +103,16 @@ const MenuManagement = () => {
     }
   };
 
-  // Toggle availability dispatch
   const productAvailability = (prod) => {
     dispatch(
       toggleAvailability({ id: prod._id, isAvailable: !prod.isAvailable }),
     );
   };
 
-  // Delete item dispatch
   const deleteItem = (id) => {
     dispatch(deleteProduct(id));
   };
 
-  // Add new item dispatch and reset
   const addItem = () => {
     if (newItem.name && newItem.description && newItem.price) {
       const itemToAdd = {
@@ -132,7 +126,6 @@ const MenuManagement = () => {
     }
   };
 
-  // Handler to update an ingredient value
   const updateIngredient = (idx, value, isEditing = false) => {
     if (isEditing && editingItem) {
       const updatedIngredients = [...(editingItem.ingredients || [])];
@@ -145,7 +138,6 @@ const MenuManagement = () => {
     }
   };
 
-  // Handler to add new ingredient
   const addIngredient = (isEditing = false) => {
     if (isEditing && editingItem) {
       setEditingItem({
@@ -160,7 +152,6 @@ const MenuManagement = () => {
     }
   };
 
-  // Handler to remove an ingredient
   const removeIngredient = (idx, isEditing = false) => {
     if (isEditing && editingItem) {
       const updatedIngredients = [...(editingItem.ingredients || [])];
@@ -173,7 +164,7 @@ const MenuManagement = () => {
     }
   };
 
-  // Reset form for new item
+  // Reset form for newitem
   const resetNewItem = () => {
     // setNewItem({
     //   name: '',
@@ -252,7 +243,6 @@ const MenuManagement = () => {
 
   return (
     <div className="space-y-6 px-2 pt-2 min-h-screen bg-[#020817] sm:px-9">
-      {/* Header & add button */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h2 className="text-white text-2xl md:text-3xl font-bold mb-2">
@@ -269,7 +259,6 @@ const MenuManagement = () => {
           <span>Add Item</span>
         </button>
       </div>
-      {/* Search bar */}
       <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
         <input
           type="text"
@@ -280,7 +269,6 @@ const MenuManagement = () => {
           aria-label="Search menu items"
         />
       </div>
-      {/* Add/Edit Modal Form */}
       {(showAddForm || editingItem) && (
         <div
           className="fixed inset-0 bg-black h-full bg-opacity-80 flex items-center justify-center z-50 "
@@ -307,7 +295,6 @@ const MenuManagement = () => {
             </div>
 
             <div className="space-y-8">
-              {/* Single Main Image Upload */}
               <div>
                 <label
                   className="block text-slate-300 text-sm font-semibold mb-2"
@@ -351,7 +338,6 @@ const MenuManagement = () => {
                   </label>
                 </div>
               </div>
-              {/* Additional Images Upload with preview */}
 
               <div>
                 <label
@@ -417,7 +403,6 @@ const MenuManagement = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Name */}
                 <div>
                   <label
                     htmlFor="itemName"
@@ -447,7 +432,6 @@ const MenuManagement = () => {
                     spellCheck={false}
                   />
                 </div>
-                {/* Category */}
                 <div>
                   <label
                     htmlFor="categorySelect"
@@ -482,7 +466,6 @@ const MenuManagement = () => {
                     <option value="accessories">Accessories</option>
                   </select>
                 </div>
-                {/* Price */}
                 <div>
                   <label
                     htmlFor="priceInput"
@@ -502,9 +485,9 @@ const MenuManagement = () => {
                         : newItem.price?.toString() || ''
                     }
                     onChange={(e) => {
-                      let val = e.target.value; // Remove leading zeros but allow decimal inputs like "0."
-
-                      val = val.replace(/^0+(\d)/, '$1'); // Validate to only allow numbers and decimal point
+                      let val = e.target.value;
+                      // Validate to only allow numbers and decimal point
+                      val = val.replace(/^0+(\d)/, '$1');
 
                       if (/^(\d+(\.\d{0,2})?)?$/.test(val)) {
                         if (editingItem) {
@@ -529,7 +512,6 @@ const MenuManagement = () => {
                     Enter price in dollars and cents.
                   </p>
                 </div>
-                {/* Sizes */}
                 <div className="md:col-span-2">
                   <label className="block text-slate-300 text-sm font-semibold mb-2">
                     Sizes (price required)
@@ -654,7 +636,6 @@ const MenuManagement = () => {
                     Add Size
                   </button>
                 </div>
-                {/* Description */}
                 <div className="md:col-span-2">
                   <label
                     htmlFor="descriptionInput"
@@ -687,7 +668,6 @@ const MenuManagement = () => {
                     className="w-full bg-slate-700 text-white placeholder-slate-400 px-6 py-5 rounded-lg border border-slate-600 focus:outline-none focus:border-orange-500 transition-colors resize-none"
                   />
                 </div>
-                {/* Checkboxes */}
                 <div>
                   <label
                     className="inline-flex items-center text-sm text-slate-300 select-none"
@@ -744,7 +724,6 @@ const MenuManagement = () => {
                     <span className="ml-2">Vegetarian</span>
                   </label>
                 </div>
-                {/* Ingredients */}
                 <div className="md:col-span-2">
                   <label className="block text-slate-300 text-sm font-semibold mb-2">
                     Ingredients
@@ -793,7 +772,6 @@ const MenuManagement = () => {
                     Add Ingredient
                   </button>
                 </div>
-                {/* Nutrition Info */}
                 <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-8">
                   {['calories', 'protein', 'fat', 'carbs'].map((key) => (
                     <div key={key}>
@@ -834,7 +812,6 @@ const MenuManagement = () => {
                     </div>
                   ))}
                 </div>
-                {/* Rating (only if editing) */}
                 {editingItem && (
                   <div>
                     <label
@@ -866,10 +843,8 @@ const MenuManagement = () => {
                   </div>
                 )}
               </div>
-              {/* Action Buttons */}
               <div className="flex  md:flex-row gap-2 sm:gap-6 pt-8">
                 {' '}
-                {/*flex  md:flex-row gap-2*/}
                 <button
                   onClick={editingItem ? updateItem : addItem}
                   className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-10 py-5 rounded-xl transition-all duration-250 font-semibold cursor-pointer"
@@ -890,7 +865,6 @@ const MenuManagement = () => {
           </div>
         </div>
       )}
-      {/* Items Grid */}
       {loading ? (
         <div className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm z-50">
           <div className="w-10 h-10 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin" />
@@ -906,7 +880,6 @@ const MenuManagement = () => {
                 role="group"
                 aria-label={`${item.name} product card`}
               >
-                {/* Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={item.image?.url || '/placeholder.svg'}
@@ -940,7 +913,6 @@ const MenuManagement = () => {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="text-white font-bold text-lg">
@@ -961,7 +933,6 @@ const MenuManagement = () => {
                     {item.description}
                   </p>
 
-                  {/* Availability */}
                   <div className="flex items-center justify-between mb-4">
                     <button
                       onClick={() => productAvailability(item)}
@@ -981,7 +952,6 @@ const MenuManagement = () => {
                     </button>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex space-x-2">
                     <button
                       onClick={() => setEditingItem(item)}

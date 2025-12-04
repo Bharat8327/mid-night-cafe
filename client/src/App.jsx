@@ -21,7 +21,6 @@ function App() {
   useSocket();
   return (
     <>
-      {/* Wrap Header and Sidebar here */}
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<HomePage />} />

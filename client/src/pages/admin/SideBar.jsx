@@ -15,13 +15,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     return 'orders';
   });
   const handleLogout = () => {
-    // Clear any stored user data
     removeCookie('authenticated');
     removeCookie('id');
     removeCookie('name');
     removeCookie('role');
 
-    // Redirect to login page
     navigate('/login');
   };
 
@@ -52,7 +50,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         aria-label="Sidebar"
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="p-4 lg:p-6 border-b border-slate-700 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -80,7 +77,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             </div>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 px-3 lg:px-4 py-4 overflow-y-auto">
             <div className="mb-6">
               <h2 className="text-slate-400 text-xs lg:text-sm font-medium mb-3 uppercase tracking-wider px-2">
@@ -122,7 +118,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             </div>
           </nav>
 
-          {/* Footer */}
           <div className="p-3 lg:p-4 border-t border-slate-700 flex-shrink-0 ">
             <button className="w-full cursor-pointer bg-slate-700 text-slate-300 py-2 lg:py-3 rounded-lg hover:bg-slate-600 transition-colors text-sm lg:text-base px-3 lg:px-4">
               View Customer Menu
@@ -137,7 +132,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <LogOut size={20} className="text-white" />
               {isOpen && <span className="font-medium">Logout</span>}
 
-              {/* Tooltip for collapsed state */}
               {!isOpen && (
                 <div className="absolute left-full ml-2 px-2 py-1 bg-slate-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   Logout

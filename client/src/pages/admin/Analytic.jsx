@@ -137,7 +137,6 @@ const Analytics = () => {
           </p>
         </div>
 
-        {/* Period Selector */}
         <div className="flex items-center space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700 w-full md:w-auto mt-2 md:mt-0">
           <Calendar size={16} className="text-slate-400 ml-2" />
           {periodOptions.map((option) => (
@@ -156,7 +155,6 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* Key Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {stats.map((stat, index) => (
           <div
@@ -179,9 +177,7 @@ const Analytics = () => {
         ))}
       </div>
 
-      {/* Charts Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Daily Revenue Chart */}
         <div className="bg-slate-800 p-3 sm:p-6 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors">
           <h3 className="text-white text-lg sm:text-xl font-bold mb-4 flex items-center">
             <span className="mr-2">💰</span>
@@ -223,7 +219,6 @@ const Analytics = () => {
           </div>
         </div>
 
-        {/* Order Trends Chart */}
         <div className="bg-slate-800 p-3 sm:p-6 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors">
           <h3 className="text-white text-lg sm:text-xl font-bold mb-4 flex items-center">
             <span className="mr-2">📊</span>
@@ -257,9 +252,7 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* Popular Items and Performance */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Popular Items */}
         <div className="bg-slate-800 p-3 sm:p-6 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors">
           <h3 className="text-white text-lg sm:text-xl font-bold mb-4 flex items-center">
             <span className="mr-2">⭐</span>
@@ -319,7 +312,6 @@ const Analytics = () => {
           </div>
         </div>
 
-        {/* Performance Summary */}
         <div className="bg-slate-800 p-3 sm:p-6 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors">
           <h3 className="text-white text-lg sm:text-xl font-bold mb-4 flex items-center">
             <span className="mr-2">🎯</span>

@@ -53,7 +53,6 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-800/30 to-pink-800/30 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative Coffee Icons */}
       <Coffee className="absolute top-10 left-10 w-8 h-8 text-amber-400/30 animate-pulse" />
       <Coffee className="absolute top-20 right-16 w-6 h-6 text-orange-400/40 animate-bounce" />
       <Coffee className="absolute bottom-16 left-16 w-7 h-7 text-yellow-400/35 animate-pulse" />
@@ -63,7 +62,6 @@ const ResetPassword = () => {
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 animate-fadeInUp border border-purple-500/30 relative">
-          {/* Decorative Icons around the card */}
           <Coffee
             className="absolute -top-4 -left-4 w-8 h-8 text-amber-400 animate-spin"
             style={{ animationDuration: '8s' }}
@@ -72,7 +70,6 @@ const ResetPassword = () => {
           <Coffee className="absolute -bottom-4 -left-4 w-7 h-7 text-yellow-400 animate-bounce" />
           <Coffee className="absolute -bottom-4 -right-4 w-8 h-8 text-amber-300 animate-pulse" />
 
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
               <div className="relative">
@@ -181,13 +178,6 @@ const ResetPassword = () => {
           </div>
         </div>
       </div>
-
-      {/* <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.visible}
-        onClose={() => setToast({ ...toast, visible: false })}
-      /> */}
     </div>
   );
 };

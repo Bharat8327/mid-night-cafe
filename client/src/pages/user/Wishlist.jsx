@@ -29,7 +29,6 @@ const Wishlist = ({
           isDarkMode ? 'bg-gray-900' : 'bg-white'
         } shadow-2xl overflow-y-auto`}
       >
-        {/* Header */}
         <div
           className={`sticky top-0 p-4 border-b ${
             isDarkMode
@@ -51,7 +50,6 @@ const Wishlist = ({
           </button>
         </div>
 
-        {/* Wishlist Items */}
         <div className="p-4 space-y-4">
           {wishlistItems.length === 0 ? (
             <div className="text-center py-8">

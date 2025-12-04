@@ -124,7 +124,6 @@ const OrdersOverview = () => {
         <p className="text-slate-400">Manage and track all customer orders</p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="bg-slate-800 p-4 md:p-6 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors">
           <div className="text-2xl md:text-3xl font-bold text-white mb-2">
@@ -167,7 +166,6 @@ const OrdersOverview = () => {
         </div>
       </div>
 
-      {/* Orders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
         {orders.map((order) => {
           const statusConfig = getStatusConfig(order.status);

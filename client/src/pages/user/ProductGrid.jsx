@@ -22,12 +22,10 @@ const ProductGrid = ({
   activeCart,
   activeWish,
 }) => {
-  //  Redux State
   const dispatch = useDispatch();
   const productData = useSelector((state) => state.profile.product);
   const loading = useSelector((state) => state.profile.isLoading);
 
-  //  Component States
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [filterVeg, setFilterVeg] = useState(false);
@@ -38,13 +36,11 @@ const ProductGrid = ({
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState('All');
 
-  //  Debounce Search (0.4s)
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 400);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Convert API data → UI data
   const products = useMemo(() => {
     if (!Array.isArray(productData)) return [];
 
@@ -69,19 +65,16 @@ const ProductGrid = ({
     }));
   }, [productData]);
 
-  // Auto Categories
   const categories = useMemo(() => {
     const unique = ['All', ...new Set(products.map((p) => p.category))];
     return unique;
   }, [products]);
 
-  // Wishlist Helper
   const isInWishlist = useCallback(
     (id) => wishlistItems.some((item) => item.id === id),
     [wishlistItems],
   );
 
-  // Filter Logic (Memoized)
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       if (filterVeg && !p.isVeg) return false;
@@ -102,7 +95,6 @@ const ProductGrid = ({
     });
   }, [products, filterVeg, priceRange, debouncedSearch, categoryFilter]);
 
-  // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProducts = filteredProducts.slice(
@@ -110,18 +102,15 @@ const ProductGrid = ({
     startIndex + itemsPerPage,
   );
 
-  // Auto reset page on filters/search
   useEffect(
     () => setCurrentPage(1),
     [debouncedSearch, filterVeg, priceRange, itemsPerPage, categoryFilter],
   );
 
-  // Fetch products
   useEffect(() => {
     dispatch(getAllProduct());
   }, []);
 
-  // Auto scroll on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
@@ -140,13 +129,11 @@ const ProductGrid = ({
 
   return (
     <div className="space-y-6">
-      {/* Search & Filters */}
       <div
         className={`p-4 sm:p-6 rounded-lg shadow-lg ${
           isDarkMode ? 'bg-gray-800' : 'bg-white'
         }`}
       >
-        {/* Search Bar */}
         <div className="mb-6">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -163,11 +150,8 @@ const ProductGrid = ({
           </div>
         </div>
 
-        {/* Filters Row */}
         <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* Left Filters */}
           <div className="flex flex-wrap items-center gap-4">
-            {/* Veg Filter */}
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -178,7 +162,6 @@ const ProductGrid = ({
               <span className="text-green-600">Veg Only</span>
             </label>
 
-            {/* Category Filter */}
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -209,7 +192,6 @@ const ProductGrid = ({
             </div>
           </div>
 
-          {/* Right Filters */}
           <div className="flex items-center gap-4">
             <select
               value={itemsPerPage}
@@ -225,7 +207,6 @@ const ProductGrid = ({
               <option>15</option>
             </select>
 
-            {/* View Mode */}
             <div className="flex items-center border rounded-lg overflow-hidden hidden sm:flex">
               <button
                 onClick={() => setViewMode('grid')}
@@ -248,7 +229,6 @@ const ProductGrid = ({
         </div>
       </div>
 
-      {/* LOADING SKELETONS */}
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.from({ length: 12 }).map((_, idx) => (
@@ -257,7 +237,6 @@ const ProductGrid = ({
         </div>
       ) : (
         <>
-          {/* Product Grid */}
           <div
             className={`grid gap-6 ${
               viewMode === 'grid'
@@ -272,7 +251,6 @@ const ProductGrid = ({
                   isDarkMode ? 'bg-gray-800' : 'bg-white'
                 }`}
               >
-                {/* Image */}
                 <div className="relative">
                   <img
                     src={product.image}
@@ -282,7 +260,6 @@ const ProductGrid = ({
                     onError={(e) => (e.target.src = '/placeholder.jpg')}
                   />
 
-                  {/* Badges */}
                   <div className="absolute top-3 left-3 flex gap-2">
                     {product.isVeg && (
                       <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs">
@@ -335,7 +312,6 @@ const ProductGrid = ({
                     {product.description}
                   </p>
 
-                  {/* Rating */}
                   <div className="flex items-center mt-2">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
@@ -352,7 +328,6 @@ const ProductGrid = ({
                     </span>
                   </div>
 
-                  {/* Price + Cart */}
                   <div className="flex items-center justify-between mt-4">
                     <div>
                       <span className="font-bold text-xl text-orange-600">
@@ -378,9 +353,7 @@ const ProductGrid = ({
             ))}
           </div>
 
-          {/*  Pagination */}
           <div className="flex justify-center items-center gap-2 mt-8">
-            {/* Prev */}
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
@@ -393,7 +366,6 @@ const ProductGrid = ({
               <CircleArrowLeft />
             </button>
 
-            {/* Numbers */}
             {Array.from({ length: totalPages })
               .slice(0, 5)
               .map((_, i) => {
@@ -413,7 +385,6 @@ const ProductGrid = ({
                 );
               })}
 
-            {/* Next */}
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
@@ -429,7 +400,6 @@ const ProductGrid = ({
         </>
       )}
 
-      {/* Modal */}
       <ProductDetailsModal
         product={selectedProduct}
         isOpen={!!selectedProduct}

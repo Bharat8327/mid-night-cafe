@@ -94,7 +94,6 @@ const CustomerManagement = () => {
         </p>
       </div>
 
-      {/* Customer Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
           <div className="text-3xl font-bold text-white mb-2">
@@ -116,7 +115,6 @@ const CustomerManagement = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
       <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
         <input
           type="text"
@@ -127,7 +125,6 @@ const CustomerManagement = () => {
         />
       </div>
 
-      {/* Customers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredCustomers.map((customer) => (
           <div

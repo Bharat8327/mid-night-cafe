@@ -39,16 +39,14 @@ const SignupAdmin = () => {
       setError('Passwords do not match');
       return;
     }
-    setError(''); // setLoading(true);
-    dispatch(signUp(formData)); // TODO: Replace with real API call
+    setError('');
+    dispatch(signUp(formData));
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-black via-purple-900 to-pink-700">
-      {/* Left: Signup Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-2">
         <div className="w-full max-w-lg bg-black/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-purple-500/30">
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <Coffee className="w-12 h-12 text-amber-400 animate-pulse mr-2" />
@@ -64,9 +62,7 @@ const SignupAdmin = () => {
             </p>
           </div>
 
-          {/* Form with grid layout */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name & Email in a row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label
@@ -113,7 +109,6 @@ const SignupAdmin = () => {
               </div>
             </div>
 
-            {/* Phone & Role in a row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label
@@ -162,7 +157,6 @@ const SignupAdmin = () => {
               </div>
             </div>
 
-            {/* Password (full width) */}
             <div>
               <label
                 htmlFor="password"
@@ -192,7 +186,6 @@ const SignupAdmin = () => {
               </div>
             </div>
 
-            {/* Confirm Password (full width) */}
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -223,7 +216,6 @@ const SignupAdmin = () => {
               {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               onClick={handleSubmit}
@@ -236,7 +228,6 @@ const SignupAdmin = () => {
         </div>
       </div>
 
-      {/* Right: Signup informative section */}
       <div className="hidden md:flex md:w-1/2 flex-col p-10 bg-gradient-to-br from-purple-900 via-black to-pink-800 overflow-hidden max-h-screen">
         <div className="max-w-lg mx-auto text-center text-[#E7D4C0] space-y-8">
           <h2 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg tracking-wide">

@@ -54,7 +54,6 @@ const OTPVerification = () => {
 
     setLoading(true);
 
-    // Replace this with your verifyOTP function if available
     setTimeout(() => {
       setLoading(false);
       showToast('OTP verified successfully!', 'success');
@@ -64,7 +63,6 @@ const OTPVerification = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-purple-900/20 to-pink-900/20 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative Coffee Icons */}
       <Coffee className="absolute top-10 left-10 w-8 h-8 text-amber-400/30 animate-pulse" />
       <Coffee className="absolute top-20 right-16 w-6 h-6 text-orange-400/40 animate-bounce" />
       <Coffee className="absolute bottom-16 left-16 w-7 h-7 text-yellow-400/35 animate-pulse" />
@@ -74,7 +72,6 @@ const OTPVerification = () => {
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-black/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 animate-fadeInUp border border-purple-500/30 relative">
-          {/* Extra Coffee Icons */}
           <Coffee
             className="absolute -top-4 -left-4 w-8 h-8 text-amber-400 animate-spin"
             style={{ animationDuration: '8s' }}
@@ -108,7 +105,6 @@ const OTPVerification = () => {
             <p className="text-sm text-pink-400 mt-2">{email}</p>
           </div>
 
-          {/* OTP Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center">
               <label className="block mb-4 text-lg text-[#C29970] font-semibold tracking-wide">

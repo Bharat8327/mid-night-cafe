@@ -1,17 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  User,
-  MapPin,
-  Package,
-  CreditCard,
-  Settings,
-  X,
-  Edit2,
-  Download,
-  ShoppingCart,
-  LogOut,
-  Plus,
-} from 'lucide-react';
+import { User, MapPin, Package, X, LogOut } from 'lucide-react';
 
 import { getCookie, setCookie } from '../../utils/utils.js';
 import axios from 'axios';
@@ -29,7 +17,6 @@ const UserProfile = ({
   mobile,
   address,
 }) => {
-  // onClose,isDarkMode,setActiveTab,handleTabClick
   const [activeTab, setActiveTab] = useState('profile');
   const [editMode, setEditMode] = useState(false);
   const [addresses, setAddresses] = useState([]);
@@ -121,8 +108,6 @@ const UserProfile = ({
     }
   };
 
-  // these are used in the user profile view
-
   if (!isOpen) return null;
 
   return (
@@ -132,7 +117,6 @@ const UserProfile = ({
           isDarkMode ? 'bg-gray-900' : 'bg-white'
         } rounded-2xl shadow-2xl overflow-hidden`}
       >
-        {/* Header */}
         <div
           className={`p-4 sm:p-6 border-b ${
             isDarkMode ? 'border-gray-700' : 'border-gray-200'
@@ -162,7 +146,6 @@ const UserProfile = ({
         </div>
 
         <div className="flex flex-col lg:flex-row h-[calc(90vh-120px)]">
-          {/* Sidebar */}
           <div
             className={`w-full lg:w-64 ${
               isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
@@ -226,7 +209,6 @@ const UserProfile = ({
             </div>
           </div>
 
-          {/* Content */}
           <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
             {activeTab === 'profile' && (
               <Profile
