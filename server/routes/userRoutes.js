@@ -25,7 +25,6 @@ import {
 const routes = express.Router();
 
 routes.get('/profile', protect, getProfile);
-// routes.get('/profile/details', protect, getProfile);
 routes.put('/profile', protect, updateUserProfile);
 routes.post('/loc/add', protect, addNewLocationController);
 routes.get('/loc', protect, getAllLocation);

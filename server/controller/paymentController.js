@@ -1,74 +1,3 @@
-// // import Cart from '../models/cart.js';
-// // import { successResponse, errorResponse } from '../utils/responseWrapper.js';
-// // import Status from '../utils/statusCode.js';
-// // import Razorpay from 'razorpay';
-// // import crypto from 'crypto';
-// // import Order from '../models/order.js';
-// // import { notifyUser } from '../server.js';
-// // import order from '../models/order.js';
-
-// // export const payrazorPay = async (req, res) => {
-// //   try {
-// //     const razorpay = new Razorpay({
-// //       key_id: process.env.RAZOR_PAY_TEST_KEY,
-// //       key_secret: process.env.RAZORPAY_API_SECRET,
-// //     });
-
-// //     const userId = req.user._id;
-
-// //     // 1. Get user cart from DB
-// //     const cart = await Cart.findOne({ user: userId }).populate('items.product');
-// //     if (!cart || cart.items.length === 0) {
-// //       return errorResponse(res, Status.BAD_REQUEST, 'Cart is empty');
-// //     }
-
-// //     // 2. Calculate total securely
-// //     let totalAmount = 0;
-// //     const cartItems = cart.items.map((item) => {
-// //       totalAmount += item.product.price * item.quantity;
-// //       return {
-// //         product: item.product._id,
-// //         quantity: item.quantity,
-// //         price: item.product.price, // snapshot of price
-// //       };
-// //     });
-
-// //     // 3. Create Razorpay order
-// //     const options = {
-// //       amount: totalAmount * 100, // paise
-// //       currency: 'INR',
-// //       receipt: `receipt_${Date.now()}`,
-// //     };
-// //     const razorpayOrder = await razorpay.orders.create(options);
-
-// //     // 4. Save new order in DB
-// //     const newOrder = await Order.create({
-// //       user: userId,
-// //       cartItems,
-// //       totalAmount,
-// //       razorpayOrderId: razorpayOrder.id,
-// //       status: 'PENDING',
-// //     });
-
-// //     if (!razorpayOrder) {
-// //       return errorResponse(
-// //         res,
-// //         Status.INTERNAL_SERVER_ERROR,
-// //         'Razorpay order creation failed',
-// //       );
-// //     }
-// //     console.log(razorpayOrder);
-
-// //     // 5. Return both razorpay and DB order info
-// //     return successResponse(res, Status.OK, 'Order created successfully', {
-// //       razorpayOrder,
-// //     });
-// //   } catch (error) {
-// //     console.error('Payment initiation error:', error);
-// //     return errorResponse(res, Status.INTERNAL_SERVER_ERROR, error.message);
-// //   }
-// // };
-
 import { successResponse, errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 import Razorpay from 'razorpay';
@@ -83,7 +12,6 @@ export const payrazorPay = async (req, res) => {
     key_secret: process.env.RAZORPAY_API_SECRET,
   });
   try {
-    // const options = req.body;
     const userId = req.user._id;
 
     const cart = await Cart.findOne({ user: userId }).populate('items.product');
@@ -91,7 +19,6 @@ export const payrazorPay = async (req, res) => {
       return errorResponse(res, Status.BAD_REQUEST, 'Cart is empty');
     }
 
-    // 2. Calculate total securely
     let totalAmount = 0;
     const cartItems = cart.items.map((item) => {
       totalAmount += item.product.price * item.quantity;

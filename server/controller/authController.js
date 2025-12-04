@@ -62,15 +62,12 @@ export const login = async (req, res) => {
     if (!isMatch) {
       errorResponse(res, Status.UNAUTHORIZED, 'Invalud Password');
     }
-    //genrate web token and refresh token
     const token = genrateWebToken({
       id: isExist._id,
       email,
       name: isExist.name,
       role: isExist.role,
     });
-    // Removed 'refreshToken' as it was declared but never used
-    // Set the JWT token in a cookie named 'myCookie'
     res.cookie('myCookie', token, {
       httpOnly: true,
       secure: true,
@@ -107,7 +104,6 @@ export const verifyUser = async (req, res) => {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
-// Google Authentication Controller
 export const authWithGoogle = async (req, res) => {
   try {
     const { idToken } = req.body;
@@ -123,11 +119,8 @@ export const authWithGoogle = async (req, res) => {
     let user = await User.findOne({ email: decodedToken.email });
 
     if (!user) {
-      // If user does not exist, create a new user
-      // Generate a random year-based string for password (not used for login)
       const year =
         new Date().getFullYear() + Math.floor(Math.random() * 1000 + 12);
-      // Hash the generated password
       const password = await bcrypt.hash(`google-auth ${year}`, 12);
 
       user = new User({
@@ -138,7 +131,6 @@ export const authWithGoogle = async (req, res) => {
       await user.save();
     }
 
-    // Generate access and refresh tokens
     const token = genrateWebToken({
       id: user._id,
       email: user.email,
@@ -153,14 +145,12 @@ export const authWithGoogle = async (req, res) => {
       name: user.name,
     });
 
-    // Set refresh token in cookie
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       secure: false,
       maxAge: 900000,
     });
 
-    // Send access token in response
     successResponse(res, Status.OK, message[200], {
       authenticated: true,
       id: user._id,
@@ -170,7 +160,6 @@ export const authWithGoogle = async (req, res) => {
       token: token,
     });
   } catch (err) {
-    // Handle errors
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
@@ -181,7 +170,6 @@ export const authWithgit = async (req, res) => {
     console.log(req.body);
 
     if (!idToken) {
-      // If idToken is not provided, return error
       errorResponse(res, Status.BAD_REQUEST, 'No idToken provided');
     }
     const decodedToken = await admin.auth().verifyIdToken(idToken);
@@ -193,11 +181,8 @@ export const authWithgit = async (req, res) => {
 
     let user = await User.findOne({ email });
     if (!user) {
-      // If user does not exist, create a new user
-      // Generate a random year-based string for password (not used for login)
       const year =
         new Date().getFullYear() + Math.floor(Math.random() * 1000 + 12);
-      // Hash the generated password
       const password = await bcrypt.hash(`github-auth ${year}`, 12);
 
       user = new User({
@@ -208,7 +193,6 @@ export const authWithgit = async (req, res) => {
       await user.save();
     }
 
-    // Generate access and refresh tokens
     const token = genrateWebToken({
       id: user._id,
       email: user.email,
@@ -227,7 +211,6 @@ export const authWithgit = async (req, res) => {
       secure: false,
       maxAge: 900000,
     });
-    // Send access token in response
     console.log(user);
 
     successResponse(res, Status.OK, message[200], {
@@ -243,7 +226,6 @@ export const authWithgit = async (req, res) => {
   }
 };
 
-// this refresh token check validity of and genrate a new access token
 export const refreshAccessTokenController = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies.jwt) {

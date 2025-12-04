@@ -2,8 +2,6 @@ import Wishlist from '../models/wishlist.js';
 import Product from '../models/product.js';
 import { successResponse, errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
-import message from '../utils/message.js';
-import wishlist from '../models/wishlist.js';
 
 export const addaddToWishlist = async (req, res) => {
   try {
