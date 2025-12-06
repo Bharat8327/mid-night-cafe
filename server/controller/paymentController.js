@@ -8,8 +8,8 @@ import Order from '../models/order.js';
 
 export const payrazorPay = async (req, res) => {
   const razorpay = new Razorpay({
-    key_id: process.env.RAZOR_PAY_TEST_KEY,
-    key_secret: process.env.RAZORPAY_API_SECRET,
+    key_id: process.env.RAZORPAY_API_KEY,
+    key_secret: process.env.RAZOR_PAY_SECRET,
   });
   try {
     const userId = req.user._id;
@@ -87,7 +87,7 @@ export const paymentValidate = async (req, res) => {
     }
 
     // Generate expected signature
-    const sha = crypto.createHmac('sha256', process.env.RAZORPAY_API_SECRET);
+    const sha = crypto.createHmac('sha256', process.env.RAZOR_PAY_SECRET);
     sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
     const digest = sha.digest('hex');
 

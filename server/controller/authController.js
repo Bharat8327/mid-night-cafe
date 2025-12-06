@@ -11,35 +11,39 @@ import admin from 'firebase-admin';
 export const signup = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
-    // Validate input
+
     console.log(req.body);
 
+    // Validate input
     if (!name || !email || !password || !phone || !role) {
-      errorResponse(res, Status.BAD_REQUEST, message[400]);
+      return errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
-    console.log(existingUser);
-
     if (existingUser) {
-      errorResponse(res, Status.BAD_REQUEST, 'User already exists.');
+      return errorResponse(res, Status.BAD_REQUEST, 'User already exists.');
     }
-    const hashedPassword = await bcrypt.hash(password, 11);
-    console.log('commes');
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 11);
+
+    // Create new user (User.create already saves to DB)
     const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
-      phone,
+      mobile: phone,
       role,
     });
-    await newUser.save();
-    console.log('save success');
 
-    successResponse(res, Status.CREATED, 'User created successfully');
+    console.log('User created:', newUser._id);
+
+    // Success response
+    return successResponse(res, Status.CREATED, 'User created successfully');
   } catch (err) {
-    errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
+    console.error(err);
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
 
@@ -52,16 +56,23 @@ export const login = async (req, res) => {
     if (!email || !password) {
       errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
+    console.log('1');
+
     // Check if user exists
     const isExist = await User.findOne({ email }).populate('password');
+    console.log(isExist);
+
     if (!isExist) {
-      errorResponse(res, Status.NOT_FOUND, message[404]);
+      errorResponse(res, Status.NOT_FOUND, `this ${email} Not Registerd`);
     }
+
     // Compare password
     const isMatch = await bcrypt.compare(password, isExist.password);
+
     if (!isMatch) {
       errorResponse(res, Status.UNAUTHORIZED, 'Invalud Password');
     }
+
     const token = genrateWebToken({
       id: isExist._id,
       email,
@@ -74,12 +85,17 @@ export const login = async (req, res) => {
       sameSite: 'strict',
       maxAge: 3600000,
     });
+    console.log(isExist);
+
     return successResponse(res, Status.OK, message[200], {
       authenticated: true,
       role: isExist.role,
       name: isExist.name,
       id: isExist.id,
       token: token,
+      email: isExist.email,
+      mobile: isExist.mobile,
+      address: isExist.address,
     });
   } catch (err) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
