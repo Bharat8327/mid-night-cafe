@@ -10,6 +10,8 @@ function ProtectRoutes({ roles }) {
   const role = getCookie('role');
 
   if (!isAuthnticated || role === 'undefined') {
+    removeCookie('role');
+    removeCookie('authenticated');
     return <Navigate to="/login" />;
   }
 

@@ -26,16 +26,11 @@ function Login() {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-
     dispatch(login(formData))
       .unwrap()
       .then(() => {
         navigate('/admin/orders');
       });
-    setLoading(!loading);
-    setTimeout(() => {
-      setLoading(!!loading);
-    }, 8000);
     setLoading(false);
   };
 

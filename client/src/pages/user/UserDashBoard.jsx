@@ -257,7 +257,7 @@ const UserDashboard = () => {
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const options = {
-        key: 'rzp_test_RERFcbJxWkDGqY', // Enter the Key ID generated from the Dashboard
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
         amount: 10000 * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         currency: 'INR',
         name: 'Acme Corp',
@@ -290,10 +290,6 @@ const UserDashboard = () => {
       };
       var rzp1 = new window.Razorpay(options);
       rzp1.on('payment.failed', function (response) {
-        // alert(response.error.code);
-        // alert(response.error.description);
-        // alert(response.error.source);
-        // alert(response.error.step);
         alert(response.error.reason);
         alert(response.error.metadata.order_id);
         alert(response.error.metadata.payment_id);

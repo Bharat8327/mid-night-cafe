@@ -6,21 +6,32 @@ import {
 } from '../../config/firebase.js';
 import { signInWithPopup } from 'firebase/auth';
 import axios from 'axios';
-import { setCookie } from '../../utils/utils.js';
+import { getCookie, setCookie } from '../../utils/utils.js';
+import { notifyError, notifyInfo, notifySuccess } from '../../utils/toast.js';
 
-export const signUp = createAsyncThunk('auth/signup', async (data) => {
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/u/signup`,
-      {
-        ...data,
-      },
-    );
-    return response;
-  } catch (error) {
-    console.log(error.message);
-  }
-});
+export const signUp = createAsyncThunk(
+  'auth/signup',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/u/signup`,
+        data,
+      );
+      notifyInfo('Account Created Successfully');
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        user: response.data.data || null,
+      };
+    } catch (error) {
+      notifyError(error?.response?.data?.message);
+
+      return rejectWithValue(
+        error?.response?.data || { message: 'Something went wrong' },
+      );
+    }
+  },
+);
 
 export const login = createAsyncThunk('auth/login', async (data) => {
   try {
@@ -31,10 +42,14 @@ export const login = createAsyncThunk('auth/login', async (data) => {
       },
       { withCredentials: true },
     );
+
     setCookie('token', response.data.data.token);
+    notifySuccess('login Successfully');
+    console.log(response.data.data);
+
     return response.data.data;
   } catch (error) {
-    console.log(error.message);
+    notifyError(error?.response?.data?.message);
   }
 });
 
@@ -46,9 +61,11 @@ export const signInWithGoogle = createAsyncThunk('auth/google', async () => {
       idToken,
     });
     setCookie('token', response.data.data.token);
+    notifySuccess('login Successfully with google');
     return response.data.data;
   } catch (error) {
-    console.log(error.message);
+    notifyError(error.message);
+    console.log(error);
   }
 });
 
@@ -60,9 +77,11 @@ export const signInWithGithub = createAsyncThunk('auth/github', async () => {
       idToken,
     });
     setCookie('token', response.data.data.token);
+    notifySuccess('login Successfully with github');
     return response.data.data;
   } catch (error) {
-    console.log(error.message);
+    notifyError('error ', error.message);
+    console.log(error);
   }
 });
 
@@ -86,15 +105,15 @@ const AuthSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.authenticated = action?.payload?.authenticated;
-        state.name = action?.payload?.name;
-        state.id = action?.payload?.id;
-        state.role = action?.payload?.role;
+        state.authenticated = action.payload?.authenticated;
+        state.name = action.payload?.name;
+        state.id = action.payload?.id;
+        state.role = action.payload?.role;
 
-        setCookie('name', action?.payload?.name);
-        setCookie('id', action?.payload?.id);
-        setCookie('role', action?.payload?.role);
-        setCookie('authenticated', action?.payload?.authenticated);
+        setCookie('name', action.payload?.name);
+        setCookie('id', action.payload?.id);
+        setCookie('role', action.payload?.role);
+        setCookie('authenticated', action.payload?.authenticated);
       });
 
     // for google auth
@@ -104,14 +123,14 @@ const AuthSlice = createSlice({
       })
       .addCase(signInWithGoogle.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.authenticated = action.payload.authenticated;
-        state.name = action.payload.name;
-        state.id = action.payload.id;
-        state.role = action.payload.role;
-        setCookie('name', action.payload.name);
-        setCookie('id', action.payload.id);
-        setCookie('authenticated', action.payload.authenticated);
-        setCookie('role', action.payload.role);
+        state.authenticated = action.payload?.authenticated;
+        state.name = action.payload?.name;
+        state.id = action.payload?.id;
+        state.role = action.payload?.role;
+        setCookie('name', action.payload?.name);
+        setCookie('id', action.payload?.id);
+        setCookie('authenticated', action.payload?.authenticated);
+        setCookie('role', action.payload?.role);
       });
 
     // sign in with github
@@ -121,14 +140,14 @@ const AuthSlice = createSlice({
       })
       .addCase(signInWithGithub.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.authenticated = action.payload.authenticated;
-        state.name = action.payload.name;
-        state.id = action.payload.id;
-        state.role = action.payload.role;
-        setCookie('name', action.payload.name);
-        setCookie('id', action.payload.id);
-        setCookie('authenticated', action.payload.authenticated);
-        setCookie('role', action.payload.role);
+        state.authenticated = action.payload?.authenticated;
+        state.name = action.payload?.name;
+        state.id = action.payload?.id;
+        state.role = action.payload?.role;
+        setCookie('name', action.payload?.name);
+        setCookie('id', action.payload?.id);
+        setCookie('authenticated', action.payload?.authenticated);
+        setCookie('role', action.payload?.role);
       });
 
     // for signup (create account)

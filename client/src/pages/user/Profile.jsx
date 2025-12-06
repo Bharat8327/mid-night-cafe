@@ -1,4 +1,5 @@
 import { Edit2 } from 'lucide-react';
+import { getCookie } from '../../utils/utils';
 
 const Profile = ({
   editMode,
@@ -8,6 +9,8 @@ const Profile = ({
   setProfileData,
   updateUserDetails,
 }) => {
+  console.log(getCookie('name'),getCookie('email'),getCookie('mobile'),getCookie('address'));
+
   return (
     <div>
       <div className="space-y-6">

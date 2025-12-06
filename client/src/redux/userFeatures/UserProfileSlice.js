@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getCookie, setCookie } from '../../utils/utils';
 import axios from 'axios';
+import { notifyError } from '../../utils/toast';
 
 export const getUserProfile = createAsyncThunk('u/profile', async () => {
   try {
@@ -18,7 +19,7 @@ export const getUserProfile = createAsyncThunk('u/profile', async () => {
 
     return data.data;
   } catch (error) {
-    console.log(error.message);
+    notifyError(error.message);
   }
 });
 
@@ -37,7 +38,7 @@ export const getAllProduct = createAsyncThunk('u/product', async () => {
     );
     return data.data;
   } catch (error) {
-    console.log(error.message);
+    notifyError(error.message);
   }
 });
 
@@ -57,10 +58,10 @@ const UserProfileSlice = createSlice({
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        setCookie('name', action.payload.fullName);
-        setCookie('email', action.payload.email);
-        setCookie('mobile', action.payload.mobile);
-        setCookie('address', action.payload.location);
+        setCookie('name', action?.payload?.fullName);
+        setCookie('email', action.payload?.email);
+        setCookie('mobile', action.payload?.mobile);
+        setCookie('address', action.payload?.location);
         state.userDetails = action.payload;
       });
     builder

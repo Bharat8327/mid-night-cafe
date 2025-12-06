@@ -41,6 +41,12 @@ const SignupAdmin = () => {
     }
     setError('');
     dispatch(signUp(formData));
+    // .unwrap()
+    // .then(() => {
+    //   setTimeout(() => {
+    //     navigate('/login');
+    //   }, 2000);
+    // });
   };
 
   return (

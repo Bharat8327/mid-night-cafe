@@ -27,6 +27,8 @@ const UserProfile = ({
     mobile,
     address,
   });
+  console.log(profileData);
+
   const orderHistory = [
     {
       id: 1,
