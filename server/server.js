@@ -17,8 +17,8 @@ app.use(cookieParser());
 const server = http.createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', // React app
-    methods: ['GET', 'POST'],
+    origin: process.env.ALLOW_ORIGIN, // React app
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
 
@@ -62,7 +62,7 @@ const options = {
       version: '1.0.0',
       description: 'A simple express api',
     },
-    servers: [{ url: `http://localhost:${config.app.PORT}` }],
+    servers: [{ url: `${process.env.ALLOW_ORIGIN}` }],
   },
   apis: ['./routes/*.js'],
 };
