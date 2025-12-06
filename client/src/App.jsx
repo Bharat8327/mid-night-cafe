@@ -5,9 +5,8 @@ import Login from './pages/auth/Login.jsx';
 import Signup from './pages/auth/Signup.jsx';
 import ForgotPassword from './pages/auth/ForgotPassword.jsx';
 import OTPVerification from './pages/auth/OTPVerification.jsx';
-import ResetPassword from './pages/auth/resetPassword.jsx';
 import UserDashBoard from './pages/user/UserDashBoard.jsx';
-import ResetPassword from './pages/auth/resetPassword.jsx';
+import ResetPassword from './pages/auth/ResetPassword.jsx';
 
 import OrdersOverview from './pages/admin/OrderOverview.jsx';
 import MenuManagement from './pages/admin/MenuManagement.jsx';
