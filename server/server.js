@@ -19,7 +19,6 @@ export const io = new Server(server, {
   cors: {
     origin: process.env.ALLOW_ORIGIN,
     methods: ['GET', 'POST'],
-    credentials: true,
   },
 });
 
