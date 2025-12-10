@@ -6,6 +6,10 @@ import {
   signInWithGithub,
   signInWithGoogle,
 } from '../../redux/features/AuthSlice.js';
+import gog from '../../../public/google.svg';
+import git from '../../../public/github.svg';
+import cofe from '../../../public/cofe.png';
+import cofe2 from '../../../public/coffe2.jpg';
 import { useDispatch } from 'react-redux';
 import { getUserProfile } from '../../redux/userFeatures/UserProfileSlice.js';
 
@@ -197,11 +201,7 @@ function Login() {
                   className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
                 >
                   <span className="w-5 h-5 rounded-2xl bg-[#D1B394] ">
-                    <img
-                      src="../public/LoginPageIcons/google.svg"
-                      className=" "
-                      alt="Google logo"
-                    />
+                    <img src={gog} className=" " alt="Google logo" />
                   </span>
                   <span className="ml-2 text-[#D1B394]">Google</span>
                 </button>
@@ -211,11 +211,7 @@ function Login() {
                   className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
                 >
                   <span className="w-5 h-5 rounded-2xl bg-[#D1B394]">
-                    <img
-                      src="../public/LoginPageIcons/github.svg"
-                      className=" "
-                      alt="GitHub logo"
-                    />
+                    <img src={git} className=" " alt="GitHub logo" />
                   </span>
                   <span className="ml-2 text-[#D1B394]">GitHub</span>
                 </button>
@@ -252,7 +248,7 @@ function Login() {
           <div className="">
             <div className="bg-black/60 rounded-lg shadow-md hover:scale-105 transition col-span-2">
               <img
-                src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=80"
+                src={cofe2}
                 alt="Night café vibes"
                 className="rounded-md mb-2"
               />
