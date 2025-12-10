@@ -11,7 +11,6 @@ app.use(
     credentials: true,
     origin: process.env.ALLOW_ORIGIN,
     methods: ['GET', 'POST'],
-    credentials: true,
   }),
 );
 app.use(morgan('dev')); // Use morgan for logging HTTP requests
