@@ -57,9 +57,12 @@ export const signInWithGoogle = createAsyncThunk('auth/google', async () => {
   try {
     const result = await signInWithPopup(auth, googleAuthProvider);
     const idToken = await result.user.getIdToken();
-    const response = await axios.post('http://localhost:3000/u/verify', {
-      idToken,
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/u/verify`,
+      {
+        idToken,
+      },
+    );
     setCookie('token', response.data.data.token);
     notifySuccess('login Successfully with google');
     return response.data.data;
@@ -73,9 +76,12 @@ export const signInWithGithub = createAsyncThunk('auth/github', async () => {
   try {
     const result = await signInWithPopup(auth, githubAuthProvider);
     const idToken = result._tokenResponse.idToken;
-    const response = await axios.post('http://localhost:3000/u/gitverify', {
-      idToken,
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/u/gitverify`,
+      {
+        idToken,
+      },
+    );
     setCookie('token', response.data.data.token);
     notifySuccess('login Successfully with github');
     return response.data.data;

@@ -252,7 +252,7 @@ const UserDashboard = () => {
     };
     try {
       const response1 = await axios.post(
-        'http://localhost:3000/user/products/pay',
+        `${import.meta.env.VITE_API_URL}/user/products/pay`,
         data,
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -270,7 +270,7 @@ const UserDashboard = () => {
           };
 
           const validateRes = await axios.post(
-            'http://localhost:3000/user/products/validate',
+            `${import.meta.env.VITE_API_URL}/user/products/validate`,
             { ...body, dbOrderId: response1?.data?.data?.dbOrderId },
             { headers: { Authorization: `Bearer ${token}` } },
           );

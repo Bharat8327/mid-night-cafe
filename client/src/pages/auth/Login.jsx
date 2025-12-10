@@ -77,10 +77,10 @@ function Login() {
               <div className="flex items-center justify-center ">
                 <div className="relative">
                   <Coffee className="w-16 h-16 text-amber-400 mr-4 animate-pulse" />
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 rounded-full animate-ping"></div>
+                  <div className="absolute -top-2 -right-2 w-4 h-4 from-yellow-400 via-pink-400 to-purple-400 rounded-full animate-ping"></div>
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
+                  <h1 className="text-4xl font-bold from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
                     Mid-night Cafe
                   </h1>
                   <p className="text-sm text-amber-300 font-medium ">
@@ -177,7 +177,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full cursor-pointer bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+                className="w-full cursor-pointer from-yellow-400 via-pink-400 to-purple-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
@@ -231,7 +231,7 @@ function Login() {
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 hidden md:flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-800 relative p-10">
+      <div className="w-full md:w-1/2 hidden md:flex items-center justify-center from-purple-900 via-black to-pink-800 relative p-10">
         <div className="max-w-lg text-center text-[#E7D4C0] space-y-6">
           <h2 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg">
             Why Midnight Café?
