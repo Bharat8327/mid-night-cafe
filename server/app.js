@@ -9,7 +9,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: 'http://localhost:5173',
+    origin: process.env.ALLOW_ORIGIN,
   }),
 );
 app.use(morgan('dev')); // Use morgan for logging HTTP requests
