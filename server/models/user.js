@@ -57,9 +57,7 @@ const userSchema = new mongoose.Schema(
     },
     mobile: {
       type: String,
-      sparse: true, // prevents issues with null duplicates
       trim: true,
-      default: null,
       validate: {
         validator: function (v) {
           return !v || /^\+?[1-9]\d{1,14}$/.test(v);
