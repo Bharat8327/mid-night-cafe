@@ -17,7 +17,7 @@ app.use(cookieParser());
 const server = http.createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: process.env.ALLOW_ORIGIN, // React app
+    origin: process.env.ALLOW_ORIGIN,
     methods: ['GET', 'POST'],
     credentials: true,
   },
