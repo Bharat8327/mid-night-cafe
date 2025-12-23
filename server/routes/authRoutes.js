@@ -5,6 +5,9 @@ import {
   authWithGoogle,
   authWithgit,
   verifyUser,
+  otpMailService,
+  verifyOtpService,
+  passwordUpdate,
 } from '../controller/authController.js';
 import verify from '../middleware/verify.js';
 const routes = express.Router();
@@ -14,7 +17,9 @@ routes.post('/signup', signup);
 routes.post('/verify', authWithGoogle);
 routes.post('/gitverify', authWithgit);
 routes.post('/auth/verify', verify, verifyUser);
-
+routes.post('/auth/forgot-passwd', otpMailService);
+routes.post('/auth/verify-otp', verifyOtpService);
+routes.post('/auth/passwd', passwordUpdate);
 export default routes;
 // this is for create new user
 /**

@@ -87,7 +87,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'seller', 'admin'],
+      enum: ['customer', 'seller', 'Admin'],
       default: 'customer',
     },
     locationDefault: {
@@ -107,6 +107,20 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
       default: Date.now,
+    },
+    passwordReset: {
+      otpHash: String,
+      otpExpiresAt: Date,
+      sendCount: {
+        type: Number,
+        default: 0,
+      },
+      firstSendAt: Date,
+      blockedUntil: Date,
+      attempts: {
+        type: Number,
+        default: 0,
+      },
     },
   },
   { timestamps: true },

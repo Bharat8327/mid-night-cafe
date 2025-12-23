@@ -5,6 +5,8 @@ import config from '../config/config.js';
 import { successResponse, errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 import message from '../utils/message.js';
+import genrateOtp from '../utils/genrateOtp.js';
+import { sendOtpEmail } from '../utils/emailServices.js';
 
 import admin from 'firebase-admin';
 
@@ -120,6 +122,7 @@ export const verifyUser = async (req, res) => {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
   }
 };
+
 export const authWithGoogle = async (req, res) => {
   try {
     const { idToken } = req.body;
@@ -239,6 +242,157 @@ export const authWithgit = async (req, res) => {
     });
   } catch (err) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);
+  }
+};
+
+export const otpMailService = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return errorResponse(
+        res,
+        Status.BAD_REQUEST,
+        'Enter valid email address',
+      );
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return errorResponse(res, Status.NOT_FOUND, 'User not found');
+    }
+
+    const reset = user.passwordReset || {};
+
+    /* 3. Block check */
+    if (reset.blockedUntil && reset.blockedUntil > new Date()) {
+      return errorResponse(
+        res,
+        Status.TOO_MANY_REQUESTS,
+        'Too many OTP requests. Try again later.',
+      );
+    }
+
+    const now = new Date();
+
+    /* 4. Send count logic (max 3 OTPs in 10 minutes) */
+    if (!reset.firstSendAt || now - reset.firstSendAt > 10 * 60 * 1000) {
+      reset.sendCount = 0;
+      reset.firstSendAt = now;
+    }
+
+    if (reset.sendCount >= 3) {
+      reset.blockedUntil = new Date(now.getTime() + 15 * 60 * 1000); // 15 min block
+      await user.save();
+      return errorResponse(
+        res,
+        Status.TOO_MANY_REQUESTS,
+        'OTP limit exceeded. Try after 15 minutes.',
+      );
+    }
+
+    /* 5. Generate & hash OTP */
+    const otp = genrateOtp(); // 6 digit
+    const otpHash = await bcrypt.hash(otp, 10);
+
+    /* 6. Store OTP securely */
+    reset.otpHash = otpHash;
+    reset.otpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes
+    reset.sendCount += 1;
+    reset.attempts = 0;
+    reset.blockedUntil = null;
+
+    user.passwordReset = reset;
+    await user.save();
+
+    /* 7. Send OTP via email */
+    await sendOtpEmail(email, otp);
+    return successResponse(res, Status.OK, 'OTP sent successfully');
+  } catch (error) {
+    console.error(error);
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, 'Server error');
+  }
+};
+
+export const verifyOtpService = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return errorResponse(res, Status.BAD_REQUEST, message[400]);
+    }
+
+    const user = await User.findOne({ email });
+    console.log(user, user.passwordReset?.otpHash);
+
+    if (!user || !user.passwordReset?.otpHash) {
+      return errorResponse(res, Status.BAD_REQUEST, 'OTP not found');
+    }
+
+    const reset = user.passwordReset;
+
+    if (reset.otpExpiresAt < new Date()) {
+      return errorResponse(res, Status.BAD_REQUEST, 'OTP expired');
+    }
+
+    if (reset.attempts >= 3) {
+      reset.blockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+      await user.save();
+      return errorResponse(res, Status.TOO_MANY_REQUESTS, 'Too many attempts');
+    }
+
+    const isValid = await bcrypt.compare(otp, reset.otpHash);
+
+    if (!isValid) {
+      reset.attempts += 1;
+      await user.save();
+      return errorResponse(res, Status.BAD_REQUEST, 'Invalid OTP');
+    }
+    user.passwordReset = {
+      otpHash: null,
+      otpExpiresAt: null,
+      sendCount: 0,
+      attempts: 0,
+      blockedUntil: null,
+      firstSendAt: null,
+    };
+    await user.save();
+    return successResponse(res, Status.OK, 'OTP verified successfully');
+  } catch (error) {
+    console.error(error);
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, 'Server error');
+  }
+};
+
+export const passwordUpdate = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return errorResponse(
+        res,
+        Status.BAD_REQUEST,
+        'Email and password are required',
+      );
+    }
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return errorResponse(res, Status.NOT_FOUND, 'User not found');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 11);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return successResponse(res, Status.OK, 'Password updated successfully');
+  } catch (err) {
+    console.error('Password Update Error:', err);
+    return errorResponse(
+      res,
+      Status.INTERNAL_SERVER_ERROR,
+      'Internal server error',
+    );
   }
 };
 

@@ -31,7 +31,6 @@ const SignupAdmin = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,14 +38,13 @@ const SignupAdmin = () => {
       setError('Passwords do not match');
       return;
     }
-    setError('');
-    dispatch(signUp(formData));
-    // .unwrap()
-    // .then(() => {
-    //   setTimeout(() => {
-    //     navigate('/login');
-    //   }, 2000);
-    // });
+    dispatch(signUp(formData))
+      .unwrap()
+      .then(() => {
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      });
   };
 
   return (

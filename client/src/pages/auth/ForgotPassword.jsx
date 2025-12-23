@@ -1,18 +1,31 @@
 import { ArrowLeft, Coffee, Mail } from 'lucide-react';
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { notifyInfo, notifySuccess } from '../../utils/toast';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(!loading);
-    setTimeout(() => {
-      setLoading(!!loading);
+    try {
+      setLoading(true);
+      const sentOtp = await axios.post(
+        `${import.meta.env.VITE_API_URL}/u/auth/forgot-passwd`,
+        { email },
+      );
+      notifySuccess(sentOtp.data.message);
       navigate('/otp-verification', { state: { email } });
-    }, 4000);
+    } catch (error) {
+      notifyInfo(error.response.data.message);
+      console.log(error.response.data.message);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-900/40 to-sky-700/20 flex items-center justify-center p-4 relative overflow-hidden">
