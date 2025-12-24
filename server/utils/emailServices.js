@@ -1,30 +1,45 @@
 import nodemailer from 'nodemailer';
 
+/* Create transporter */
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: false,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
-export async function sendOtpEmail(toEmail, otp, expiresInMint = 5) {
-  if (!process.env.SMTP_USER) {
+export async function sendOtpEmail(toEmail, otp, expiresInMin = 5) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.log(
-      `[DEV] Sending OTP to ${toEmail}: otp=${otp}  expiresIn=${expiresInMint}s`,
+      `[DEV MODE] OTP for ${toEmail}: ${otp} (expires in ${expiresInMin} min)`,
     );
     return;
   }
-  console.log(transporter);
 
-  const mail = {
-    from: `"MidnytCafe" <${process.env.SENDER_EMAIL}>`,
+  const mailOptions = {
+    from: `"MidnytCafe" <${process.env.SMTP_USER}>`,
     to: toEmail,
     subject: 'Your password reset code',
-    text: `Your password reset code is ${otp}. It expires in ${expiresInMint} minute(s).`,
-    html: `<p>Your password reset code is <strong>${otp}</strong>.</p><p>It expires in ${expiresInMint} minute(s).</p>`,
+    text: `Your password reset code is ${otp}. It expires in ${expiresInMin} minute(s).`,
+    html: `
+      <p>Your password reset code is:</p>
+      <h2>${otp}</h2>
+      <p>This code expires in ${expiresInMin} minute(s).</p>
+    `,
   };
-  const info = await transporter.sendMail(mail);
-  console.log('Sent OTP email', info.messageId);
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('OTP email sent:', info.messageId);
+  } catch (error) {
+    console.error('SMTP SEND ERROR:', error.message);
+    throw error;
+  }
 }

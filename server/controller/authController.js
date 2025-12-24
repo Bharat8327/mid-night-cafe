@@ -264,7 +264,6 @@ export const otpMailService = async (req, res) => {
 
     const reset = user.passwordReset || {};
 
-    /* 3. Block check */
     if (reset.blockedUntil && reset.blockedUntil > new Date()) {
       return errorResponse(
         res,
@@ -275,14 +274,13 @@ export const otpMailService = async (req, res) => {
 
     const now = new Date();
 
-    /* 4. Send count logic (max 3 OTPs in 10 minutes) */
     if (!reset.firstSendAt || now - reset.firstSendAt > 10 * 60 * 1000) {
       reset.sendCount = 0;
       reset.firstSendAt = now;
     }
 
     if (reset.sendCount >= 3) {
-      reset.blockedUntil = new Date(now.getTime() + 15 * 60 * 1000); // 15 min block
+      reset.blockedUntil = new Date(now.getTime() + 15 * 60 * 1000);
       await user.save();
       return errorResponse(
         res,
@@ -291,13 +289,11 @@ export const otpMailService = async (req, res) => {
       );
     }
 
-    /* 5. Generate & hash OTP */
-    const otp = genrateOtp(); // 6 digit
+    const otp = genrateOtp();
     const otpHash = await bcrypt.hash(otp, 10);
 
-    /* 6. Store OTP securely */
     reset.otpHash = otpHash;
-    reset.otpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes
+    reset.otpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
     reset.sendCount += 1;
     reset.attempts = 0;
     reset.blockedUntil = null;
@@ -305,8 +301,9 @@ export const otpMailService = async (req, res) => {
     user.passwordReset = reset;
     await user.save();
 
-    /* 7. Send OTP via email */
-    await sendOtpEmail(email, otp);
+    sendOtpEmail(email, otp).catch((err) =>
+      console.error('OTP email failed:', err.message),
+    );
     return successResponse(res, Status.OK, 'OTP sent successfully');
   } catch (error) {
     console.error(error);

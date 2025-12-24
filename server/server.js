@@ -10,6 +10,7 @@ import productRoutes from './routes/productRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import { Server } from 'socket.io';
 import http from 'http';
+// import redisClient from './config/redis.js';
 
 app.use(cookieParser());
 
@@ -74,6 +75,11 @@ app.use('/u', authRoutes);
 app.use('/u', userRoutes);
 app.use('/u', productRoutes);
 app.use('/user/products', paymentRoutes);
+app.get('/redis-test', async (req, res) => {
+  await redisClient.set('app:status', 'running');
+  const value = await redisClient.get('app:status');
+  return res.json({ redisValue: value });
+});
 
 // 404 handler
 app.use((req, res, next) => {
