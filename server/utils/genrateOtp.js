@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 
-function generateOTP() {
-  return crypto.randomInt(100000, 999999).toString();
+export function generateOtp(length = 6) {
+  return Math.floor(100000 + Math.random() * 900000)
+    .toString()
+    .substring(0, length);
 }
-
-export default generateOTP;
+export default generateOtp;

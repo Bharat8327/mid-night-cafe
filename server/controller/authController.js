@@ -6,7 +6,8 @@ import { successResponse, errorResponse } from '../utils/responseWrapper.js';
 import Status from '../utils/statusCode.js';
 import message from '../utils/message.js';
 import genrateOtp from '../utils/genrateOtp.js';
-import { sendOtpEmail } from '../utils/emailServices.js';
+import { sendOtpEmail } from '../config/mailTemplates.js';
+import transporter from '../config/nodemailer.js';
 
 import admin from 'firebase-admin';
 
@@ -301,9 +302,18 @@ export const otpMailService = async (req, res) => {
     user.passwordReset = reset;
     await user.save();
 
-    sendOtpEmail(email, otp).catch((err) =>
-      console.error('OTP email failed:', err.message),
-    );
+    transporter.verify((error, success) => {
+      if (error) {
+        console.error('SMTP Error:', error);
+      } else {
+        console.log('SMTP Server is ready');
+      }
+    });
+    const mailOption = sendOtpEmail(email, otp);
+    console.log(mailOption);
+    const info = await transporter.sendMail(mailOption);
+    console.log('Email sent:', info.messageId);
+
     return successResponse(res, Status.OK, 'OTP sent successfully');
   } catch (error) {
     console.error(error);
