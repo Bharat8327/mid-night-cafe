@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 /* Create transporter */
 const transporter = nodemailer.createTransport({
@@ -14,6 +16,12 @@ const transporter = nodemailer.createTransport({
   greetingTimeout: 10000,
   socketTimeout: 10000,
 });
+console.log(
+  process.env.SMTP_USER,
+  process.env.SMTP_PASS,
+  process.env.SMTP_HOST,
+  Number(process.env.SMTP_PORT),
+);
 
 export async function sendOtpEmail(toEmail, otp, expiresInMin = 5) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
