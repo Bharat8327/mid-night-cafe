@@ -8,12 +8,11 @@ import Product from '../models/product.js';
 export const getProfile = async (req, res) => {
   try {
     const user = req.user;
-    console.log('this is a user details ', user);
 
     const data = {
-      location: user.locationDefault,
+      address: user.locationDefault,
       mobile: user.mobile,
-      fullName: user.name,
+      name: user.name,
       email: user.email,
     };
     successResponse(res, Status.OK, message[200], data);
@@ -44,8 +43,6 @@ export const updateUserProfile = async (req, res) => {
 export const addNewLocationController = async (req, res) => {
   const { label, street, city, state, country, postalCode, isDefault } =
     req.body;
-
-  console.log(label, street, city, state, country, postalCode, isDefault);
 
   try {
     if (!label || !street || !city || !state || !country || !postalCode) {
@@ -114,12 +111,9 @@ export const updateDefaultAddress = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return errorResponse(res, Status.NOT_FOUND, 'User not found');
 
-    console.log('comes here ', typeof id);
-
     const addressIndex = user.location.findIndex(
       (loc) => loc._id.toString() === id.toString(),
     );
-    console.log('index of the default ', addressIndex);
 
     if (addressIndex === -1) {
       return errorResponse(res, Status.NOT_FOUND, 'Address not found');
@@ -244,7 +238,6 @@ export const getMyOrderById = async (req, res) => {
 export const getAllProduct = async (req, res) => {
   try {
     const product = await Product.find();
-    console.log(req.user);
     successResponse(res, Status.OK, message[200], product);
   } catch (error) {
     errorResponse(res, Status.INTERNAL_SERVER_ERROR, err.message);

@@ -50,7 +50,6 @@ export const payrazorPay = async (req, res) => {
       razorpayOrderId: order.id,
       status: 'PENDING',
     });
-    console.log(newOrder);
 
     successResponse(res, Status.OK, message[200], {
       ...order,
@@ -69,13 +68,6 @@ export const paymentValidate = async (req, res) => {
       razorpay_signature,
       dbOrderId,
     } = req.body;
-
-    console.log(
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      dbOrderId,
-    );
 
     if (
       !razorpay_order_id ||
@@ -159,8 +151,6 @@ export const razorpayWebhook = async (req, res) => {
     }
 
     let status = 'PAID1';
-    console.log('hello bharat', event.event);
-
     // if (event.event === 'payment.captured') status = 'PAID';
     // else if (event.event === 'payment.failed') status = 'FAILED';
     // else return res.json({ status: 'ignored' }); // other events
@@ -176,8 +166,6 @@ export const razorpayWebhook = async (req, res) => {
     );
 
     if (order) {
-      console.log(`✅ Payment ${status} via webhook:`, order.razorpayOrderId);
-
       // Notify user via Socket.IO
       notifyUser(order.user.toString(), 'paymentStatus', {
         orderId: order._id,

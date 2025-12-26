@@ -200,10 +200,8 @@ export const updateProduct = async (req, res) => {
 };
 
 export const getAllProduct = async (req, res) => {
-  console.log(req.user);
   try {
     const products = await Product.find({ createdBy: req.user._id });
-    console.log(products);
 
     successResponse(res, Status.OK, message[200], products);
   } catch (err) {

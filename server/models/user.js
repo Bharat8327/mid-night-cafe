@@ -1,3 +1,4 @@
+import { verify } from 'crypto';
 import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema(
@@ -121,6 +122,10 @@ const userSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+    },
+    awsVerify: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

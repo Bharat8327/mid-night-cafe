@@ -7,31 +7,22 @@ import Status from '../utils/statusCode.js';
 import message from '../utils/message.js';
 import genrateOtp from '../utils/genrateOtp.js';
 import { sendOtpEmail } from '../config/mailTemplates.js';
-import transporter from '../config/nodemailer.js';
-
 import admin from 'firebase-admin';
+import { sendEmail, verifyEmailAddresses } from '../utils/aws.js';
+import handleOtpError from '../utils/handleOtpError.js';
+// import transporter from '../config/nodemailer.js';
 
 export const signup = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
-
-    console.log(req.body);
-
-    // Validate input
     if (!name || !email || !password || !phone || !role) {
       return errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
-
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return errorResponse(res, Status.BAD_REQUEST, 'User already exists.');
     }
-
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 11);
-
-    // Create new user (User.create already saves to DB)
     const newUser = await User.create({
       name,
       email,
@@ -39,10 +30,6 @@ export const signup = async (req, res) => {
       mobile: phone,
       role,
     });
-
-    console.log('User created:', newUser._id);
-
-    // Success response
     return successResponse(res, Status.CREATED, 'User created successfully');
   } catch (err) {
     console.error(err);
@@ -52,24 +39,18 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    // Removed 'rememberMe' as it was declared but never used
     const { email, password, rememberMe } = req.body;
-    console.log(req.body);
 
     if (!email || !password) {
       errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
-    console.log('1');
 
-    // Check if user exists
     const isExist = await User.findOne({ email }).populate('password');
-    console.log(isExist);
 
     if (!isExist) {
       errorResponse(res, Status.NOT_FOUND, `this ${email} Not Registerd`);
     }
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, isExist.password);
 
     if (!isMatch) {
@@ -88,7 +69,6 @@ export const login = async (req, res) => {
       sameSite: 'strict',
       maxAge: 3600000,
     });
-    console.log(isExist);
 
     return successResponse(res, Status.OK, message[200], {
       authenticated: true,
@@ -107,8 +87,6 @@ export const login = async (req, res) => {
 
 export const verifyUser = async (req, res) => {
   try {
-    console.log('details dummy', req.user);
-
     if (!req.user) {
       errorResponse(res, Status.UNAUTHORIZED, message[401]);
     }
@@ -128,14 +106,11 @@ export const authWithGoogle = async (req, res) => {
   try {
     const { idToken } = req.body;
     if (!idToken) {
-      // If idToken is not provided, return error
       errorResponse(res, Status.BAD_GATEWAY, message[400]);
     }
 
-    // Verify the Google idToken using Firebase Admin SDK
     const decodedToken = await admin.auth().verifyIdToken(idToken);
 
-    // Try to find user by email
     let user = await User.findOne({ email: decodedToken.email });
 
     if (!user) {
@@ -187,7 +162,6 @@ export const authWithGoogle = async (req, res) => {
 export const authWithgit = async (req, res) => {
   try {
     const { idToken } = req.body;
-    console.log(req.body);
 
     if (!idToken) {
       errorResponse(res, Status.BAD_REQUEST, 'No idToken provided');
@@ -196,8 +170,6 @@ export const authWithgit = async (req, res) => {
     const name = decodedToken.name;
     const picture = decodedToken.picture;
     const email = decodedToken.email;
-
-    console.log(name, picture, email);
 
     let user = await User.findOne({ email });
     if (!user) {
@@ -231,7 +203,6 @@ export const authWithgit = async (req, res) => {
       secure: false,
       maxAge: 900000,
     });
-    console.log(user);
 
     successResponse(res, Status.OK, message[200], {
       authenticated: true,
@@ -246,6 +217,38 @@ export const authWithgit = async (req, res) => {
   }
 };
 
+export const verifyEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || !Array.isArray([email])) {
+      return errorResponse(res, Status.BAD_REQUEST, 'Email is required');
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return errorResponse(res, Status.NOT_FOUND, 'User not found');
+    }
+
+    if (!user.awsVerify) {
+      const verificationSuccess = await verifyEmailAddresses([email]);
+      user.awsVerify = true;
+      await user.save();
+
+      return successResponse(
+        res,
+        Status.OK,
+        'Verification email sent successfully',
+      );
+    }
+
+    return await otpMailService(req, res);
+  } catch (error) {
+    console.error(error);
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, message[500]);
+  }
+};
+
 export const otpMailService = async (req, res) => {
   try {
     const { email } = req.body;
@@ -257,14 +260,18 @@ export const otpMailService = async (req, res) => {
         'Enter valid email address',
       );
     }
-
     const user = await User.findOne({ email });
     if (!user) {
       return errorResponse(res, Status.NOT_FOUND, 'User not found');
     }
-
+    if (!user.awsVerify) {
+      return errorResponse(
+        res,
+        Status.BAD_REQUEST,
+        'Email not verified with AWS SES',
+      );
+    }
     const reset = user.passwordReset || {};
-
     if (reset.blockedUntil && reset.blockedUntil > new Date()) {
       return errorResponse(
         res,
@@ -272,14 +279,11 @@ export const otpMailService = async (req, res) => {
         'Too many OTP requests. Try again later.',
       );
     }
-
     const now = new Date();
-
     if (!reset.firstSendAt || now - reset.firstSendAt > 10 * 60 * 1000) {
       reset.sendCount = 0;
       reset.firstSendAt = now;
     }
-
     if (reset.sendCount >= 3) {
       reset.blockedUntil = new Date(now.getTime() + 15 * 60 * 1000);
       await user.save();
@@ -289,71 +293,91 @@ export const otpMailService = async (req, res) => {
         'OTP limit exceeded. Try after 15 minutes.',
       );
     }
-
     const otp = genrateOtp();
     const otpHash = await bcrypt.hash(otp, 10);
-
     reset.otpHash = otpHash;
     reset.otpExpiresAt = new Date(now.getTime() + 5 * 60 * 1000);
     reset.sendCount += 1;
     reset.attempts = 0;
     reset.blockedUntil = null;
-
     user.passwordReset = reset;
     await user.save();
 
-    transporter.verify((error, success) => {
-      if (error) {
-        console.error('SMTP Error:', error);
-      } else {
-        console.log('SMTP Server is ready');
-      }
-    });
-    const mailOption = sendOtpEmail(email, otp);
-    console.log(mailOption);
-    const info = await transporter.sendMail(mailOption);
-    console.log('Email sent:', info.messageId);
-
+    const result = await sendEmail([email], otp);
     return successResponse(res, Status.OK, 'OTP sent successfully');
   } catch (error) {
     console.error(error);
-    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, 'Server error');
+    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
 export const verifyOtpService = async (req, res) => {
   try {
     const { email, otp } = req.body;
+
     if (!email || !otp) {
       return errorResponse(res, Status.BAD_REQUEST, message[400]);
     }
 
-    const user = await User.findOne({ email });
-    console.log(user, user.passwordReset?.otpHash);
+    await otpVerifiedHelper(email, otp);
 
-    if (!user || !user.passwordReset?.otpHash) {
-      return errorResponse(res, Status.BAD_REQUEST, 'OTP not found');
+    return successResponse(res, Status.OK, 'OTP verified successfully');
+  } catch (error) {
+    return handleOtpError(res, error);
+  }
+};
+
+export const passwordUpdate = async (req, res) => {
+  try {
+    const { email, newPassword, otp } = req.body;
+
+    if (!email || !newPassword || !otp) {
+      return errorResponse(res, Status.BAD_REQUEST, message[502]);
     }
 
-    const reset = user.passwordReset;
+    await otpVerifiedHelper(email, otp, newPassword);
 
-    if (reset.otpExpiresAt < new Date()) {
-      return errorResponse(res, Status.BAD_REQUEST, 'OTP expired');
-    }
+    return successResponse(res, Status.OK, 'Password updated successfully');
+  } catch (error) {
+    return handleOtpError(res, error);
+  }
+};
 
-    if (reset.attempts >= 3) {
-      reset.blockedUntil = new Date(Date.now() + 15 * 60 * 1000);
-      await user.save();
-      return errorResponse(res, Status.TOO_MANY_REQUESTS, 'Too many attempts');
-    }
+const otpVerifiedHelper = async (email, otp, newPassword = null) => {
+  const user = await User.findOne({ email });
 
-    const isValid = await bcrypt.compare(otp, reset.otpHash);
+  if (!user || !user.passwordReset?.otpHash) {
+    throw new Error('OTP_NOT_FOUND');
+  }
 
-    if (!isValid) {
-      reset.attempts += 1;
-      await user.save();
-      return errorResponse(res, Status.BAD_REQUEST, 'Invalid OTP');
-    }
+  const reset = user.passwordReset;
+  const now = new Date();
+
+  if (reset.blockedUntil && reset.blockedUntil > now) {
+    throw new Error('TOO_MANY_ATTEMPTS');
+  }
+
+  if (!reset.otpExpiresAt || reset.otpExpiresAt < now) {
+    throw new Error('OTP_EXPIRED');
+  }
+
+  if (reset.attempts >= 3) {
+    reset.blockedUntil = new Date(now.getTime() + 15 * 60 * 1000);
+    await user.save();
+    throw new Error('TOO_MANY_ATTEMPTS');
+  }
+
+  const isValid = await bcrypt.compare(otp, reset.otpHash);
+
+  if (!isValid) {
+    reset.attempts += 1;
+    await user.save();
+    throw new Error('INVALID_OTP');
+  }
+
+  if (newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
     user.passwordReset = {
       otpHash: null,
       otpExpiresAt: null,
@@ -363,44 +387,8 @@ export const verifyOtpService = async (req, res) => {
       firstSendAt: null,
     };
     await user.save();
-    return successResponse(res, Status.OK, 'OTP verified successfully');
-  } catch (error) {
-    console.error(error);
-    return errorResponse(res, Status.INTERNAL_SERVER_ERROR, 'Server error');
   }
-};
-
-export const passwordUpdate = async (req, res) => {
-  try {
-    const { email, newPassword } = req.body;
-
-    if (!email || !newPassword) {
-      return errorResponse(
-        res,
-        Status.BAD_REQUEST,
-        'Email and password are required',
-      );
-    }
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return errorResponse(res, Status.NOT_FOUND, 'User not found');
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 11);
-
-    user.password = hashedPassword;
-    await user.save();
-
-    return successResponse(res, Status.OK, 'Password updated successfully');
-  } catch (err) {
-    console.error('Password Update Error:', err);
-    return errorResponse(
-      res,
-      Status.INTERNAL_SERVER_ERROR,
-      'Internal server error',
-    );
-  }
+  return true;
 };
 
 export const refreshAccessTokenController = async (req, res) => {

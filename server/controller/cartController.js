@@ -10,8 +10,6 @@ export const addToCartController = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
     const userId = req.user._id;
-    console.log(productId, quantity, userId);
-
     const product = await Product.findById(productId);
     if (!product) {
       return errorResponse(res, Status.NOT_FOUND, 'Product not found');
