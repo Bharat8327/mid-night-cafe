@@ -144,7 +144,7 @@ const Addresses = ({ addresses, isDarkMode, setAddresses }) => {
         },
       );
     } catch (error) {
-      console.log('error occurs ', error.message);
+      console.log(error.message);
     }
   };
 

@@ -6,7 +6,6 @@ import { notifyError } from '../../utils/toast';
 export const getUserProfile = createAsyncThunk('u/profile', async () => {
   try {
     const token = getCookie('token');
-    const id = getCookie('id');
 
     const { data } = await axios.get(
       `${import.meta.env.VITE_API_URL}/u/profile`,
@@ -17,7 +16,7 @@ export const getUserProfile = createAsyncThunk('u/profile', async () => {
       },
     );
 
-    return data.data;
+    return data;
   } catch (error) {
     notifyError(error.message);
   }
@@ -25,7 +24,6 @@ export const getUserProfile = createAsyncThunk('u/profile', async () => {
 
 export const getAllProduct = createAsyncThunk('u/product', async () => {
   try {
-    const id = getCookie('id');
     const token = getCookie('token');
 
     const { data } = await axios.get(
@@ -58,11 +56,11 @@ const UserProfileSlice = createSlice({
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        setCookie('name', action?.payload?.fullName);
+        state.userDetails = action.payload.data;
+        setCookie('name', action?.payload?.name);
         setCookie('email', action.payload?.email);
         setCookie('mobile', action.payload?.mobile);
-        setCookie('address', action.payload?.location);
-        state.userDetails = action.payload;
+        setCookie('address', action.payload?.address);
       });
     builder
       .addCase(getAllProduct.pending, (state) => {

@@ -110,7 +110,6 @@ const UserDashboard = () => {
 
         notifySuccess('Cart updated');
       } catch (error) {
-        console.log(error.message);
         notifyError('Failed to update quantity');
       }
 
@@ -131,7 +130,6 @@ const UserDashboard = () => {
       setCartItems((prev) => prev.filter((item) => item.id !== id));
       notifySuccess('Removed from cart');
     } catch (error) {
-      console.log(error.response?.data || error.message);
       notifyError('Failed to remove item from cart');
     } finally {
       setRemoveToCart(false);
@@ -172,7 +170,6 @@ const UserDashboard = () => {
 
       notifySuccess('Added to wishlist');
     } catch (error) {
-      console.log(error.message);
       notifyError('Failed to add to wishlist');
     } finally {
       setActiveWish(false);
@@ -212,7 +209,6 @@ const UserDashboard = () => {
 
       setWishlistItems(formatted);
     } catch (error) {
-      console.log(error.message);
       notifyError('Failed to load wishlist');
     }
   };
@@ -319,7 +315,6 @@ const UserDashboard = () => {
         toggleDarkMode={toggleDarkMode}
         cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
         wishlistCount={wishlistItems.length}
-        userName={getCookie('name')}
         onCartClick={() => setIsCartOpen(true)}
         onWishlistClick={() => setIsWishlistOpen(true)}
         onProfileClick={() => setIsProfileOpen(true)}
@@ -379,12 +374,7 @@ const UserDashboard = () => {
         isDarkMode={isDarkMode}
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
-        name={getCookie('name')}
-        email={getCookie('email')}
-        mobile={getCookie('mobile')}
-        address={getCookie('address')}
       />
-
       <Chatbot isDarkMode={isDarkMode} />
     </div>
   );

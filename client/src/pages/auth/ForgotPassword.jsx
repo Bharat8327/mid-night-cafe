@@ -14,14 +14,13 @@ function ForgotPassword() {
     try {
       setLoading(true);
       const sentOtp = await axios.post(
-        `${import.meta.env.VITE_API_URL}/u/auth/forgot-passwd`,
+        `${import.meta.env.VITE_API_URL}/u/auth/aws-verify`,
         { email },
       );
       notifySuccess(sentOtp.data.message);
       navigate('/otp-verification', { state: { email } });
     } catch (error) {
       notifyInfo(error.response.data.message);
-      console.log(error.response.data.message);
       setLoading(false);
     } finally {
       setLoading(false);

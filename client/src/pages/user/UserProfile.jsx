@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { User, MapPin, Package, X, LogOut } from 'lucide-react';
-
 import { getCookie, setCookie } from '../../utils/utils.js';
 import axios from 'axios';
 import Profile from './Profile.jsx';
@@ -8,27 +7,12 @@ import Order from './Order.jsx';
 import Logout from './Logout.jsx';
 import Addresses from './Addresses.jsx';
 
-const UserProfile = ({
-  isDarkMode,
-  isOpen,
-  onClose,
-  name,
-  email,
-  mobile,
-  address,
-}) => {
+const UserProfile = ({ isDarkMode, isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('profile');
   const [editMode, setEditMode] = useState(false);
   const [addresses, setAddresses] = useState([]);
 
-  const [profileData, setProfileData] = useState({
-    name,
-    email,
-    mobile,
-    address,
-  });
-  console.log(profileData);
-
+  const [profileData, setProfileData] = useState({});
   const orderHistory = [
     {
       id: 1,
@@ -157,7 +141,7 @@ const UserProfile = ({
           >
             <div className="flex lg:flex-col space-x-2 lg:space-x-0 md:justify-evenly lg:space-y-2 overflow-x-auto lg:overflow-x-visible">
               <button
-                onClick={() => setActiveTab('profile')}
+                onClick={() => handleTabClick('profile')}
                 className={`flex-shrink-0 lg:w-full w-40 text-left p-3 rounded-lg transition-colors flex items-center space-x-2 cursor-pointer ${
                   activeTab === 'profile'
                     ? 'bg-orange-500 text-white'

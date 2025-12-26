@@ -108,8 +108,6 @@ const OTPVerification = () => {
       notifySuccess('OTP verified successfully');
       navigate('/reset-password', { state: { email, otp: otpString } });
     } catch (err) {
-      console.log(err);
-
       notifyError(err.response?.data?.message || 'Invalid or expired OTP');
       setOtp(Array(OTP_LENGTH).fill(''));
       inputRefs.current[0]?.focus();
@@ -148,7 +146,34 @@ const OTPVerification = () => {
             <h2 className="text-2xl font-bold text-[#C29970]">Verify OTP</h2>
             <p className="text-[#8F663D] text-sm">{email}</p>
           </div>
+          <div className="text-left text-sm text-[#8F663D] space-y-2 mb-3 ">
+            <p className="font-semibold text-[#C29970]">
+              Important instructions:
+            </p>
 
+            <ol className="list-decimal list-inside space-y-1">
+              <li>
+                First, make sure email delivery from{' '}
+                <span className="font-semibold">Amazon Web Services (AWS)</span>
+                is allowed. Without AWS verification, the email cannot be
+                delivered.
+              </li>
+              <li>
+                Once AWS is verified, you will receive the verification code in
+                your email inbox.
+              </li>
+              <li>
+                If you do not receive the email, please check your
+                <span className="font-semibold"> Spam</span> or
+                <span className="font-semibold"> Junk</span> folder.
+              </li>
+              <li>
+                Still not received? Click on the
+                <span className="font-semibold"> Resend OTP</span> button to
+                request a new code.
+              </li>
+            </ol>
+          </div>
           <form onSubmit={handleSubmit}>
             <div className="flex justify-center space-x-3">
               {otp.map((digit, index) => (

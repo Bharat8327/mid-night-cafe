@@ -1,17 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ShoppingCart, Heart, User, Sun, Moon, Menu, X } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { getUserProfile } from '../../redux/userFeatures/UserProfileSlice';
 
 const Navbar = ({
   isDarkMode,
   toggleDarkMode,
   cartCount,
   wishlistCount,
-  userName,
   onCartClick,
   onWishlistClick,
   onProfileClick,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { userDetails, isLoading } = useSelector((state) => state.profile);
 
   return (
     <nav
@@ -78,10 +80,8 @@ const Navbar = ({
               <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>
-              {userName && (
-                <span className="text-sm font-medium hidden lg:block">
-                  {userName}
-                </span>
+              {userDetails?.name && (
+                <span className="text-sm font-medium">{userDetails?.name}</span>
               )}
             </button>
           </div>
@@ -145,8 +145,10 @@ const Navbar = ({
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
-                {userName && (
-                  <span className="text-sm font-medium">{userName}</span>
+                {userDetails?.name && (
+                  <span className="text-sm font-medium">
+                    {userDetails?.name}
+                  </span>
                 )}
               </button>
             </div>

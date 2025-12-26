@@ -45,8 +45,6 @@ export const login = createAsyncThunk('auth/login', async (data) => {
 
     setCookie('token', response.data.data.token);
     notifySuccess('login Successfully');
-    console.log(response.data.data);
-
     return response.data.data;
   } catch (error) {
     notifyError(error?.response?.data?.message);
@@ -68,7 +66,6 @@ export const signInWithGoogle = createAsyncThunk('auth/google', async () => {
     return response.data.data;
   } catch (error) {
     notifyError(error.message);
-    console.log(error);
   }
 });
 
@@ -87,7 +84,6 @@ export const signInWithGithub = createAsyncThunk('auth/github', async () => {
     return response.data.data;
   } catch (error) {
     notifyError('error ', error.message);
-    console.log(error);
   }
 });
 

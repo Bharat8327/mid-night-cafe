@@ -8,6 +8,7 @@ const ResetPassword = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
+  const otp = location.state?.otp;
 
   const [formData, setFormData] = useState({
     password: '',
@@ -51,6 +52,7 @@ const ResetPassword = () => {
       setLoading(true);
       await axios.post(`${import.meta.env.VITE_API_URL}/u/auth/passwd`, {
         email,
+        otp,
         newPassword: password,
       });
       notifySuccess(
@@ -58,8 +60,6 @@ const ResetPassword = () => {
       );
       setTimeout(() => navigate('/login'), 2500);
     } catch (err) {
-      console.log(err);
-
       notifyError(
         err.response?.data?.message ||
           'Reset link expired. Please request a new one.',

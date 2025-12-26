@@ -127,36 +127,28 @@ const ProductSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(addNewItems.fulfilled, (state, action) => {
-        console.log(action.payload);
-      });
+      .addCase(addNewItems.fulfilled, (state, action) => {});
 
     builder
       .addCase(updateProduct.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(updateProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
-      });
+      .addCase(updateProduct.fulfilled, (state, action) => {});
 
     builder
       .addCase(deleteProduct.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(deleteProduct.fulfilled, (state, action) => {
-        console.log(action.payload);
-      });
+      .addCase(deleteProduct.fulfilled, (state, action) => {});
 
     builder
       .addCase(toggleAvailability.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(toggleAvailability.fulfilled, (state, action) => {
-        console.log(action.payload);
-      });
+      .addCase(toggleAvailability.fulfilled, (state, action) => {});
   },
 });
 
