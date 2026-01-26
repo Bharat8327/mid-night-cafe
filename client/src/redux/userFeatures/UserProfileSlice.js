@@ -56,11 +56,11 @@ const UserProfileSlice = createSlice({
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.userDetails = action.payload.data;
+        state.userDetails = action?.payload?.data;
         setCookie('name', action?.payload?.name);
-        setCookie('email', action.payload?.email);
-        setCookie('mobile', action.payload?.mobile);
-        setCookie('address', action.payload?.address);
+        setCookie('email', action?.payload?.email);
+        setCookie('mobile', action.?payload?.mobile);
+        setCookie('address', action?.payload?.address);
       });
     builder
       .addCase(getAllProduct.pending, (state) => {
