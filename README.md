@@ -76,7 +76,7 @@ I’m always open to **connect, share knowledge, and explore new opportunities!*
 
 ## 🔗 Links
 
-Live demo: [https://cafe-i3f0.onrender]
+Live demo: [https://cafe-i3f0.onrender.com/]
 
 Documentation: Swagger available for backend APIs
 
