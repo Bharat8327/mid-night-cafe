@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Coffee } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Coffee, Loader2 } from 'lucide-react';
 import {
   login,
   signInWithGithub,
@@ -34,8 +34,8 @@ function Login() {
       .unwrap()
       .then(() => {
         navigate('/admin/orders');
+        setLoading(false);
       });
-    setLoading(false);
   };
 
   const googleAuth = () => {
@@ -177,9 +177,16 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full cursor-pointer bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 text-white py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
               </button>
             </form>
 
@@ -200,6 +207,12 @@ function Login() {
                   onClick={googleAuth}
                   className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
                 >
+                  {gogAuthDisable && (
+                    <Loader2
+                      size={18}
+                      className="animate-spin text-orange-400 "
+                    />
+                  )}
                   <span className="w-5 h-5 rounded-2xl bg-[#D1B394] ">
                     <img src={gog} className=" " alt="Google logo" />
                   </span>
@@ -210,6 +223,12 @@ function Login() {
                   onClick={githubAuth}
                   className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
                 >
+                  {gitAuthDisable && (
+                    <Loader2
+                      size={18}
+                      className="animate-spin text-orange-400"
+                    />
+                  )}
                   <span className="w-5 h-5 rounded-2xl bg-[#D1B394]">
                     <img src={git} className=" " alt="GitHub logo" />
                   </span>
