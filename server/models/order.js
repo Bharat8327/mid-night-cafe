@@ -22,6 +22,8 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      name: { type: String },
+      image: { type: String },
     },
   ],
   totalAmount: {
@@ -40,6 +42,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ['PENDING', 'PAID', 'FAILED', 'REFUNDED'],
     default: 'PENDING',
+  },
+  kitchenStatus: {
+    type: String,
+    enum: ['pending', 'preparing', 'ready', 'completed'],
+    default: 'pending',
   },
   paymentLogs: [
     {
