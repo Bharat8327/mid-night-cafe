@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Coffee } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Coffee, Loader2 } from 'lucide-react';
 import {
   login,
   signInWithGithub,
@@ -8,8 +8,6 @@ import {
 } from '../../redux/features/AuthSlice.js';
 import gog from '../../../public/google.svg';
 import git from '../../../public/github.svg';
-import cofe from '../../../public/cofe.png';
-import cofe2 from '../../../public/coffe2.jpg';
 import { useDispatch } from 'react-redux';
 import { getUserProfile } from '../../redux/userFeatures/UserProfileSlice.js';
 
@@ -24,57 +22,64 @@ function Login() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [gogAuthDisable, setGogAuthDisable] = useState(false);
-  const [gitAuthDisable, setGitAuthDisable] = useState(false);
+  const [gogLoading, setGogLoading] = useState(false);
+  const [gitLoading, setGitLoading] = useState(false);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    dispatch(login(formData))
-      .unwrap()
-      .then(() => {
+    try {
+      const result = await dispatch(login(formData)).unwrap();
+      if (result?.role === 'Admin') {
         navigate('/admin/orders');
-      });
-    setLoading(false);
+      } else {
+        navigate('/dashboard');
+      }
+    } catch {
+      // error handled by redux/toast
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const googleAuth = () => {
-    setGogAuthDisable(true);
-    dispatch(signInWithGoogle())
-      .unwrap()
-      .then(() => {
-        navigate('/dashboard');
-        dispatch(getUserProfile());
-        setGogAuthDisable(false);
-      });
+  const googleAuth = async () => {
+    setGogLoading(true);
+    try {
+      await dispatch(signInWithGoogle()).unwrap();
+      dispatch(getUserProfile());
+      navigate('/dashboard');
+    } catch {
+      // error handled
+    } finally {
+      setGogLoading(false);
+    }
   };
 
-  const githubAuth = () => {
-    setGitAuthDisable(true);
-    dispatch(signInWithGithub())
-      .unwrap()
-      .then(() => {
-        navigate('/dashboard');
-        dispatch(getUserProfile());
-        setGitAuthDisable(false);
-      });
+  const githubAuth = async () => {
+    setGitLoading(true);
+    try {
+      await dispatch(signInWithGithub()).unwrap();
+      dispatch(getUserProfile());
+      navigate('/dashboard');
+    } catch {
+      // error handled
+    } finally {
+      setGitLoading(false);
+    }
   };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
   return (
     <div className="min-h-screen bg-black flex flex-col md:flex-row overflow-hidden">
-      <div className="w-full md:w-1/2 flex items-center justify-center  md:p-12">
+      <div className="w-full md:w-1/2 flex items-center justify-center md:p-12">
         <div className="w-full max-w-md relative z-10">
           <div className="bg-black/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-purple-500/30 relative">
             <div className="text-center mb-8">
-              <div className="flex items-center justify-center ">
+              <div className="flex items-center justify-center">
                 <div className="relative">
                   <Coffee className="w-16 h-16 text-amber-400 mr-4 animate-pulse" />
                   <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 rounded-full animate-ping"></div>
@@ -83,187 +88,143 @@ function Login() {
                   <h1 className="text-4xl font-bold bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
                     Mid-night Cafe
                   </h1>
-                  <p className="text-sm text-amber-300 font-medium ">
+                  <p className="text-sm text-amber-300 font-medium">
                     ☕ Your Perfect Coffee Destination ☕
                   </p>
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-[#C29970] mb-2">
-                Welcome Back!
-              </h2>
-              <p className="text-[#C29970]">
-                Sign in to enjoy our premium coffee experience
+              <h2 className="text-2xl font-bold text-[#C29970] mt-4 mb-2">Welcome Back!</h2>
+              <p className="text-sm text-gray-400">
+                Don&apos;t have an account?{' '}
+                <Link to="/signup" className="text-pink-400 hover:underline">
+                  Sign up
+                </Link>
               </p>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="space-y-6">
+            {/* Social login */}
+            <div className="flex flex-col gap-3 mb-6">
+              <button
+                type="button"
+                onClick={googleAuth}
+                disabled={gogLoading || gitLoading || loading}
+                className="flex items-center justify-center space-x-2 w-full py-3 rounded-lg border border-purple-500/30 bg-white/5 hover:bg-white/10 text-[#C29970] transition-colors disabled:opacity-60"
+              >
+                {gogLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <img src={gog} alt="Google" className="w-5 h-5" />
+                )}
+                <span className="text-sm font-medium">
+                  {gogLoading ? 'Signing in with Google…' : 'Continue with Google'}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={githubAuth}
+                disabled={gogLoading || gitLoading || loading}
+                className="flex items-center justify-center space-x-2 w-full py-3 rounded-lg border border-purple-500/30 bg-white/5 hover:bg-white/10 text-[#C29970] transition-colors disabled:opacity-60"
+              >
+                {gitLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <img src={git} alt="GitHub" className="w-5 h-5" />
+                )}
+                <span className="text-sm font-medium">
+                  {gitLoading ? 'Signing in with GitHub…' : 'Continue with GitHub'}
+                </span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex-1 h-px bg-purple-500/30"></div>
+              <span className="text-xs text-gray-500">or sign in with email</span>
+              <div className="flex-1 h-px bg-purple-500/30"></div>
+            </div>
+
+            <form onSubmit={handleFormSubmit} className="space-y-5">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-[#C29970] mb-2"
-                >
-                  Email Address
-                </label>
+                <label className="text-[#C29970] text-sm mb-1 block">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400 w-4 h-4" />
                   <input
-                    id="email"
-                    name="email"
                     type="email"
+                    name="email"
+                    required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 bg-black/80 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-[#C29970] placeholder:text-[#a78b6c]"
-                    placeholder="Enter your email"
-                    required
+                    placeholder="you@example.com"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
                   />
                 </div>
               </div>
+
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-[#C29970] mb-2"
-                >
-                  Password
-                </label>
+                <label className="text-[#C29970] text-sm mb-1 block">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400 w-4 h-4" />
                   <input
-                    id="password"
-                    name="password"
                     type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    required
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-10 py-3 bg-black/80 border border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-[#C29970] placeholder:text-[#a78b6c]"
-                    placeholder="Enter your password"
-                    required
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-10 py-3 rounded-lg bg-black/70 border border-purple-500/30 text-[#C29970] placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute cursor-pointer right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
+
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center space-x-2 text-gray-400 cursor-pointer">
                   <input
-                    id="rememberMe"
-                    name="rememberMe"
                     type="checkbox"
+                    name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleInputChange}
-                    className="h-4 cursor-pointer w-4 text-purple-400 focus:ring-purple-400 border-purple-500/30 rounded bg-black/80"
+                    className="accent-pink-400"
                   />
-                  <label
-                    htmlFor="rememberMe"
-                    className="ml-2 block text-sm text-[#C29970] cursor-pointer"
-                  >
-                    Remember me
-                  </label>
-                </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-pink-400 hover:text-pink-300 font-medium transition-colors duration-200"
-                >
-                  Forgot password?
+                  <span>Remember me</span>
+                </label>
+                <Link to="/forgot-password" className="text-pink-400 hover:underline">
+                  Forgot Password?
                 </Link>
               </div>
+
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full cursor-pointer bg-gradient-to-br from-yellow-400 via-pink-400 to-purple-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+                disabled={loading || gogLoading || gitLoading}
+                className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold transition-all disabled:opacity-60"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Signing in…</span>
+                  </>
+                ) : (
+                  <span>Sign In</span>
+                )}
               </button>
             </form>
-
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-purple-500/30" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-black text-[#8F663D]">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <button
-                  disabled={gogAuthDisable}
-                  onClick={googleAuth}
-                  className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
-                >
-                  <span className="w-5 h-5 rounded-2xl bg-[#D1B394] ">
-                    <img src={gog} className=" " alt="Google logo" />
-                  </span>
-                  <span className="ml-2 text-[#D1B394]">Google</span>
-                </button>
-                <button
-                  disabled={gitAuthDisable}
-                  onClick={githubAuth}
-                  className="w-full cursor-pointer inline-flex justify-center py-2 px-4 border border-purple-500/30 rounded-md shadow-sm bg-black/80 text-sm font-medium text-[#C29970] hover:bg-purple-900/20 transition-colors duration-200 hover:scale-110"
-                >
-                  <span className="w-5 h-5 rounded-2xl bg-[#D1B394]">
-                    <img src={git} className=" " alt="GitHub logo" />
-                  </span>
-                  <span className="ml-2 text-[#D1B394]">GitHub</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <span className="text-[#C29970]">Don't have an account? </span>
-              <Link
-                to="/signup"
-                className="text-pink-400 hover:text-pink-300 font-medium transition-colors duration-200"
-              >
-                Sign up
-              </Link>
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 hidden md:flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-pink-800 relative p-10">
-        <div className="max-w-lg text-center text-[#E7D4C0] space-y-6">
-          <h2 className="text-4xl font-extrabold text-yellow-300 drop-shadow-lg">
-            Why Midnight Café?
-          </h2>
-          <p className="text-lg leading-relaxed">
-            Midnight Café isn’t just a coffee shop — it’s your{' '}
-            <span className="font-bold text-pink-400">
-              perfect late-night escape
-            </span>
-            . Whether you need a space to work, relax, or hangout, we provide
-            the warm aroma of fresh brews and cozy vibes around the clock.
-          </p>
-
-          <div className="">
-            <div className="bg-black/60 rounded-lg shadow-md hover:scale-105 transition col-span-2">
-              <img
-                src={cofe2}
-                alt="Night café vibes"
-                className="rounded-md mb-2"
-              />
-              <h3 className="text-md font-semibold text-yellow-400">
-                Open Late
-              </h3>
-              <p className="text-sm">
-                Perfect for night owls, workers, and friends who love midnight
-                talks.
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-8 text-sm italic text-[#C29970]">
-            “Life happens, coffee helps.” Join us and feel the vibe. 🌙☕
+      {/* Decorative right panel */}
+      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-black via-purple-900 to-pink-700 items-center justify-center p-12">
+        <div className="text-center text-white">
+          <Coffee className="w-32 h-32 mx-auto mb-6 text-amber-400 opacity-80" />
+          <h2 className="text-4xl font-bold mb-4">Mid-night Cafe</h2>
+          <p className="text-lg text-purple-200">
+            Order your favourite food &amp; drinks, track your orders, and enjoy the experience 🌙
           </p>
         </div>
       </div>
